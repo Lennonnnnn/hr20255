@@ -69,6 +69,25 @@ $result = $conn->query($sql);
                 </form>
             </div>
     </nav>
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-light">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to log out?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn border-secondary text-light" data-bs-dismiss="modal">Cancel</button>
+                    <form action="../admin/logout.php" method="POST">
+                        <button type="submit" class="btn btn-danger">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="layoutSidenav">
         <div id="layoutSidenav_nav">
             <nav class="sb-sidenav accordion bg-dark" id="sidenavAccordion">
@@ -135,7 +154,7 @@ $result = $conn->query($sql);
                         </a>
                         <div class="collapse" id="collapseLM" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                            <a class="nav-link text-light" href="../admin/leave_requests.php">Leave Request</a>
+                                <a class="nav-link text-light" href="../admin/leave_requests.php">Leave Request</a>
                                 <a class="nav-link text-light" href="../admin/leave_history.php">Leave History</a>
                                 <a class="nav-link text-light"  href="../admin/leave_allocation.php">Set Leave</a>
                             </nav>
@@ -235,110 +254,110 @@ $result = $conn->query($sql);
                     </tbody>
                 </table>
                 <!-- Button trigger modal -->
-<div class="d-flex justify-content-center mt-4 mb-0">
-    <a class="btn btn-primary text-light" href="#" data-bs-toggle="modal" data-bs-target="#createAdminModal">Create Admin Account</a>
-</div>
+                <div class="d-flex justify-content-center mt-4 mb-0">
+                    <a class="btn btn-primary text-light" href="#" data-bs-toggle="modal" data-bs-target="#createAdminModal">Create Admin Account</a>
+                </div>
 
-<!-- Modal -->
-<div class="modal fade" id="createAdminModal" tabindex="-1" aria-labelledby="createAdminModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content bg-dark">
-      <div class="modal-header border-bottom border-1 border-warning">
-        <h5 class="modal-title text-light" id="createAdminModalLabel">Create Admin Account</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <!-- Form inside the modal -->
-        <form id="registrationForm">
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <div class="form-floating mb-3 mb-md-0">
-                <input class="form-control" id="inputFirstName" type="text" name="firstname" placeholder="Enter your first name" autocomplete="given-name" required />
-                <label for="inputFirstName">First name</label>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-floating"> 
-                <input class="form-control" id="inputLastName" type="text" name="lastname" placeholder="Enter your last name" autocomplete="family-name" required />
-                <label for="inputLastName">Last name</label>
-              </div>
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <div class="form-floating">
-                <input class="form-control" id="inputEmail" type="email" name="email" placeholder="name@example.com" autocomplete="email" required />
-                <label for="inputEmail">Email address</label>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-floating mb-md-0">
-                <select id="inputGender" name="gender" class="form-select" required>
-                  <option value="" disabled selected>Select gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                </select>
-                <label for="inputGender">Select Gender</label>
-              </div>
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <div class="form-floating mb-3 mb-md-0">
-                <input class="form-control" id="inputPassword" type="password" name="password" placeholder="Create a password" autocomplete="new-password" required />
-                <label for="inputPassword">Password</label>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-floating mb-3 mb-md-0">
-                <input class="form-control" id="inputPasswordConfirm" type="password" name="confirm_password" placeholder="Confirm password" autocomplete="new-password" required />
-                <label for="inputPasswordConfirm">Confirm Password</label>
-              </div>
-            </div> 
-          </div>
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <div class="form-floating mb-3 mb-md-0">
-                <select id="inputRole" name="role" class="form-select" autocomplete="organization-title" required>
-                  <option value="" disabled selected>Select a role</option>
-                  <option value="Admin">Admin</option>
-                  <option value="Employee">Employee</option>
-                  <option value="Manager">Manager</option>
-                  <option value="HR">HR</option>
-                </select>
-                <label for="inputRole">Select Role</label>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-floating mb-3 mb-md-0">
-                <input class="form-control" id="inputPhoneNumber" type="tel" name="phone_number" placeholder="Phone number" autocomplete="tel" required />
-                <label for="inputPhoneNumber">Phone Number</label>
-              </div>
-            </div>
-          </div>
-          <div class="form-floating mb-3">
-            <input class="form-control" id="inputAddress" type="text" name="address" placeholder="Address" autocomplete="street-address" required />
-            <label for="inputAddress">Address</label>
-          </div>
-          <div class="mt-4 mb-0">
-            <div class="d-grid">
-              <button class="btn btn-primary btn-block" type="submit">Create Account</button>
-            </div>
-            <div class="text-center">
-              <div class="text-center mt-2 mb-2">
-                <a class="btn border-secondary w-100 text-light" href="../admin/admin.php">Back</a>
-              </div>
-            </div>  
-          </div> 
-        </form>
-      </div>
-      <div class="modal-footer border-top border-1 border-warning">
-        <p class="small text-center text-muted mt-1">Human Resource 2</p>
-      </div>
-    </div>
-  </div>
-</div>
+                <!-- Modal -->
+                <div class="modal fade" id="createAdminModal" tabindex="-1" aria-labelledby="createAdminModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content bg-dark">
+                            <div class="modal-header border-bottom border-1 border-warning">
+                                <h5 class="modal-title text-light" id="createAdminModalLabel">Create Admin Account</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Form inside the modal -->
+                                <form id="registrationForm">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="form-floating mb-3 mb-md-0">
+                                                <input class="form-control" id="inputFirstName" type="text" name="firstname" placeholder="Enter your first name" autocomplete="given-name" required />
+                                                <label for="inputFirstName">First name</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating"> 
+                                                <input class="form-control" id="inputLastName" type="text" name="lastname" placeholder="Enter your last name" autocomplete="family-name" required />
+                                                <label for="inputLastName">Last name</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <input class="form-control" id="inputEmail" type="email" name="email" placeholder="name@example.com" autocomplete="email" required />
+                                                <label for="inputEmail">Email address</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating mb-md-0">
+                                                <select id="inputGender" name="gender" class="form-select" required>
+                                                    <option value="" disabled selected>Select gender</option>
+                                                    <option value="Male">Male</option>
+                                                    <option value="Female">Female</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                                <label for="inputGender">Select Gender</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="form-floating mb-3 mb-md-0">
+                                                <input class="form-control" id="inputPassword" type="password" name="password" placeholder="Create a password" autocomplete="new-password" required />
+                                                <label for="inputPassword">Password</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating mb-3 mb-md-0">
+                                                <input class="form-control" id="inputPasswordConfirm" type="password" name="confirm_password" placeholder="Confirm password" autocomplete="new-password" required />
+                                                <label for="inputPasswordConfirm">Confirm Password</label>
+                                            </div>
+                                        </div> 
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="form-floating mb-3 mb-md-0">
+                                                <select id="inputRole" name="role" class="form-select" autocomplete="organization-title" required>
+                                                    <option value="" disabled selected>Select a role</option>
+                                                    <option value="Admin">Admin</option>
+                                                    <option value="Employee">Employee</option>
+                                                    <option value="Manager">Manager</option>
+                                                    <option value="HR">HR</option>
+                                                </select>
+                                                <label for="inputRole">Select Role</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating mb-3 mb-md-0">
+                                                <input class="form-control" id="inputPhoneNumber" type="tel" name="phone_number" placeholder="Phone number" autocomplete="tel" required />
+                                                <label for="inputPhoneNumber">Phone Number</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input class="form-control" id="inputAddress" type="text" name="address" placeholder="Address" autocomplete="street-address" required />
+                                        <label for="inputAddress">Address</label>
+                                    </div>
+                                    <div class="mt-4 mb-0">
+                                        <div class="d-grid">
+                                            <button class="btn btn-primary btn-block" type="submit">Create Account</button>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="text-center mt-2 mb-2">
+                                                <a class="btn border-secondary w-100 text-light" href="../admin/admin.php">Back</a>
+                                            </div>
+                                        </div>  
+                                    </div> 
+                                </form>
+                            </div>
+                            <div class="modal-footer border-top border-1 border-warning">
+                                <p class="small text-center text-muted mt-1">Human Resource 2</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
 
                 <div class="modal fade" id="updateEmployeeModal" tabindex="-1" aria-labelledby="updateEmployeeModalLabel" aria-hidden="true">

@@ -46,51 +46,68 @@ function getTopEmployeesByCriterion($conn, $criterion, $criterionLabel, $index) 
             if (file_exists($row['pfp']) && !empty($row['pfp'])) {
                 $pfp = base64_encode(file_get_contents($row['pfp']));
             } else {
-                $pfp = $defaultPfp; // Use default profile picture
+                $pfp = $defaultPfp;
             }
 
-            echo "<div class='card mb-3' style='max-width: 100%; margin-top: 20px; border: 2px solid #ddd; border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); padding: 20px; background-color: #f9f9f9;'>"; // Style for certificate look
-            echo "<div class='row no-gutters' style='height: 100%;'>";
-            echo "<div class='col-md-12 d-flex justify-content-center' style='height: 100%;'>";
-            if (!empty($pfp) && $pfp != 'default_profile_image_base64_data_here') { 
-                // Apply the border only if it's not the default profile picture
-                echo "<img src='data:image/jpeg;base64,$pfp' class='card-img' alt='Profile Picture' style='width: 200px; height: 200px; object-fit: cover; border-radius: 100px; border: 2px solid black;'>";
-            } else {
-                // For default profile picture, no border
-                echo "<img src='data:image/jpeg;base64,$pfp' class='card-img' alt='Profile Picture' style='width: 150px; height: 150px; object-fit: cover; border-radius: 15px;'>";
+            // Calculate percentage for the progress circle
+            $scorePercentage = ($row['avg_score'] / 10) * 100;
+            
+            echo "<div class='employee-card'>";
+            
+            
+            echo "<div class='metrics-container'>";
+            
+            // Left metrics
+            echo "<div class='metrics-column'>";
+            echo "<div class='metric-box fade-in'>";
+            echo "<span class='metric-label'>Projects Completed</span>";
+            echo "<span class='metric-value'>10</span>";
+            echo "</div>";
+            
+            echo "<div class='metric-box fade-in' style='animation-delay: 0.2s;'>";
+            echo "<span class='metric-label'>Project Quality</span>";
+            echo "<span class='metric-value'>92%</span>";
+            echo "</div>";
+            echo "</div>";
+
+            // Center profile section
+            echo "<div class='profile-section'>";
+            echo "<div class='progress-circle-container'>";
+            echo "<div class='progress-circle' data-progress='" . $scorePercentage . "'>";
+            echo "<div class='profile-image-container'>";
+            if (!empty($pfp)) {
+                echo "<img src='data:image/jpeg;base64,$pfp' alt='Profile Picture' class='profile-image'>";
             }
-            echo "</div>";            
-            echo "<div class='col-md-12 text-center' style='padding-top: 20px;'>";
-            echo "<h1 class='card-title' style='font-size: 40px; font-weight: bold; color: #333;'>Haha Try</h1>";
-            echo "<p class='card-text fs-5 text-dark'><strong>Department:</strong> " . htmlspecialchars($row['department']) . "</p>";
-            echo "<p class='card-text fs-5 text-dark'><strong>Employee ID:</strong> " . htmlspecialchars($row['e_id']) . "</p>";
             echo "</div>";
-            echo "<div class='col-md-12 d-flex flex-wrap justify-content-around align-items-center' style='height: 100%; padding-top: 20px;'>";
-            echo "<div class='card-body' style='height: 100%;'>";
-            echo "<div class='row'>";
-            echo "<div class='col-md-6 text-start'>";
-            echo "<p class='card-text fs-5 text-dark'><strong>Quality of Work:</strong></p>";
-            echo "<div class='progress mb-3' style='height: 10px;'><div class='progress-bar bg-info' role='progressbar' style='width: " . ($row['avg_score'] / 5) * 100 . "%;' aria-valuenow='" . ($row['avg_score'] / 5) * 100 . "' aria-valuemin='0' aria-valuemax='100'></div></div>";
-            echo "<p class='card-text fs-5 text-dark'><strong>Teamwork:</strong></p>";
-            echo "<div class='progress mb-3' style='height: 10px;'><div class='progress-bar bg-info' role='progressbar' style='width: " . ($row['avg_score'] / 5) * 100 . "%;' aria-valuenow='" . ($row['avg_score'] / 5) * 100 . "' aria-valuemin='0' aria-valuemax='100'></div></div>";
             echo "</div>";
-            echo "<div class='col-md-6 text-end'>";
-            echo "<p class='card-text fs-5 text-dark'><strong>Communication Skills:</strong></p>";
-            echo "<div class='progress mb-3' style='height: 10px;'><div class='progress-bar bg-info' role='progressbar' style='width: " . ($row['avg_score'] / 5) * 100 . "%;' aria-valuenow='" . ($row['avg_score'] / 5) * 100 . "' aria-valuemin='0' aria-valuemax='100'></div></div>";
-            echo "<p class='card-text fs-5 text-dark'><strong>Punctuality:</strong></p>";
-            echo "<div class='progress mb-3' style='height: 10px;'><div class='progress-bar bg-info' role='progressbar' style='width: " . ($row['avg_score'] / 5) * 100 . "%;' aria-valuenow='" . ($row['avg_score'] / 5) * 100 . "' aria-valuemin='0' aria-valuemax='100'></div></div>";
             echo "</div>";
-            echo "</div>"; // End of row
-            echo "<div class='row'>";
-            echo "<div class='col-md-12 text-center'>";
-            echo "<p class='card-text fs-5 text-dark'><strong>Initiative:</strong></p>";
-            echo "<div class='progress mb-3' style='height: 10px; width: 60%; margin: 0 auto;'><div class='progress-bar bg-info' role='progressbar' style='width: " . ($row['avg_score'] / 5) * 100 . "%;' aria-valuenow='" . ($row['avg_score'] / 5) * 100 . "' aria-valuemin='0' aria-valuemax='100'></div></div>";
+            
+            echo "<div class='profile-info'>";
+            echo "<h2 class='employee-name'>" . htmlspecialchars($row['firstname'] . ' ' . $row['lastname']) . "</h2>";
+            echo "<p class='department-name'>" . htmlspecialchars($row['department']) . "</p>";
             echo "</div>";
-            echo "</div>"; // End of row
-            echo "</div>"; // End of card-body
-            echo "</div>"; // End of col-md-12
-            echo "</div>"; // End of row
-            echo "</div>"; // End of card
+            echo "</div>";
+
+            // Right metrics
+            echo "<div class='metrics-column'>";
+            echo "<div class='metric-box fade-in' style='animation-delay: 0.4s;'>";
+            echo "<span class='metric-label'>Efficiency</span>";
+            echo "<span class='metric-value'>60%</span>";
+            echo "</div>";
+            
+            echo "<div class='metric-box fade-in' style='animation-delay: 0.6s;'>";
+            echo "<span class='metric-label'>Timeline</span>";
+            echo "<span class='metric-value'>75%</span>";
+            echo "</div>";
+            echo "</div>";
+            
+            echo "</div>"; // End metrics-container
+            
+            echo "<div class='employee-id fade-in' style='animation-delay: 0.8s;'>";
+            echo "Employee ID: " . htmlspecialchars($row['e_id']);
+            echo "</div>";
+            
+            echo "</div>"; // End employee-card
         }
     } else {
         echo "<p class='text-center'>No outstanding employees found for $criterionLabel.</p>";
@@ -116,37 +133,253 @@ function getTopEmployeesByCriterion($conn, $criterion, $criterionLabel, $index) 
     <style>
         .card {
             border: 2px solid #ddd; 
-            border-radius: 15px; 
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
-            padding: 20px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            padding: 10px; 
             background-color: #f9f9f9;
         }
         .card-img {
-            border-radius: 15px;
+            border-radius: 10px;
         }
         .card-body {
-            padding-left: 20px;
+            padding-left: 10px;
         }
         .card-title {
-            font-size: 24px; 
+            font-size: 20px; 
             font-weight: bold; 
             color: #333;
         }
         .card-text {
-            font-size: 18px;
+            font-size: 14px;
         }
         .category {
             display: none;
         }
         .btn {
             transition: transform 0.3s, background-color 0.3s; /* Smooth transition */
-            border-radius: 25px;
+            border-radius: 20px;
+            padding: 5px 10px;
+            font-size: 14px;
         }
 
         .btn:hover {
             transform: translateY(-2px); /* Raise the button up */
         }
-</style>
+        
+        .emoji-container {
+            display: none;
+            gap: 15px;
+            cursor: pointer;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .emoji {
+            font-size: 30px;
+            transition: transform 0.2s ease;
+            padding: 10px;
+        }
+        .emoji:hover {
+            transform: scale(1.2);
+        }
+        .reaction {
+            margin-top: 15px;
+            font-size: 18px;
+            color: #333;
+        }
+        .saved-reaction {
+            margin-top: 10px;
+            color: #007bff;
+        }
+        .open-btn {
+            font-size: 16px;
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .open-btn:hover {
+            background-color: #0056b3;
+        }
+        .reaction-count {
+            font-size: 18px;
+            color: #333;
+            margin-top: 10px;
+            display: flex;
+            gap: 15px;
+        }
+        .reaction-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .selected-emoji {
+            font-size: 50px;
+            margin-top: 20px;
+        }
+        .employee-card {
+            background: linear-gradient(135deg, #172554 0%, #1e3a8a 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 2rem auto;
+            color: white;
+        }
+
+        .dashboard-title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            color: white;
+        }
+
+        .metrics-container {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .metrics-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .metric-box {
+            background: rgba(64, 61, 223, 0.27);
+            border-radius: 15px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metric-label {
+            color: #22d3ee;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 1.875rem;
+            font-weight: bold;
+        }
+
+        .profile-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-circle-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+
+        .progress-circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            background: #1e3a8a;
+        }
+
+        .profile-image-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid #22d3ee;
+            overflow: hidden;
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-info {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .employee-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .department-name {
+            color: #22d3ee;
+            font-size: 0.875rem;
+        }
+
+        .employee-id {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 1rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        /* Progress Circle Animation */
+        @keyframes progressCircle {
+            from {
+                stroke-dashoffset: 628;
+            }
+            to {
+                stroke-dashoffset: var(--progress);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .metrics-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .employee-card {
+                margin: 1rem;
+                padding: 1rem;
+            }
+        }
+
+        /* Additional styles for progress circle */
+        .progress-ring {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.5s ease-out;
+        }
+    </style>
 </head>
 <body class="sb-nav-fixed bg-black">
     <nav class="sb-topnav navbar navbar-expand navbar-dark border-bottom border-1 border-warning bg-dark">
@@ -194,7 +427,7 @@ function getTopEmployeesByCriterion($conn, $criterion, $criterionLabel, $index) 
                                     <li><a class="dropdown-item" href="#!">Settings</a></li>
                                     <li><a class="dropdown-item" href="#!">Activity Log</a></li>
                                     <li><hr class="dropdown-divider" /></li>
-                                    <li><a class="dropdown-item" href="../../employee/staff/logout.php" onclick="confirmLogout(event)">Logout</a></li>
+                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a></li>
                                 </ul>
                             </li>
                             <li class="nav-item text-light d-flex ms-3 flex-column align-items-center text-center">
@@ -299,6 +532,25 @@ function getTopEmployeesByCriterion($conn, $criterion, $criterionLabel, $index) 
                 </div>
             </div>
             </main>
+            <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content bg-dark text-light">
+                            <div class="modal-header border-bottom border-warning">
+                                <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you want to log out?
+                            </div>
+                            <div class="modal-footer border-top border-warning">
+                                <button type="button" class="btn border-secondary text-light" data-bs-dismiss="modal">Cancel</button>
+                                <form action="../employee/logout.php" method="POST">
+                                    <button type="submit" class="btn btn-danger">Logout</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>  
             <footer class="py-4 bg-dark text-light mt-auto border-top border-warning">
                 <div class="container-fluid px-4">
                     <div class="d-flex align-items-center justify-content-between small">
@@ -421,6 +673,36 @@ function getTopEmployeesByCriterion($conn, $criterion, $criterionLabel, $index) 
             // Start the slideshow after showing the first category
             setInterval(showNextCategory, 3000); // Change every 3 seconds
         };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize progress circles
+            const circles = document.querySelectorAll('.progress-circle');
+            circles.forEach(circle => {
+                const progress = circle.getAttribute('data-progress');
+                const circumference = 2 * Math.PI * 90; // for r=90
+                const strokeDashoffset = circumference - (progress / 100) * circumference;
+                
+                // Create SVG circle
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.setAttribute('class', 'progress-ring');
+                svg.setAttribute('width', '200');
+                svg.setAttribute('height', '200');
+                
+                const circleElement = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circleElement.setAttribute('class', 'progress-ring__circle');
+                circleElement.setAttribute('stroke', '#22d3ee');
+                circleElement.setAttribute('stroke-width', '4');
+                circleElement.setAttribute('fill', 'transparent');
+                circleElement.setAttribute('r', '90');
+                circleElement.setAttribute('cx', '100');
+                circleElement.setAttribute('cy', '100');
+                circleElement.style.strokeDasharray = `${circumference} ${circumference}`;
+                circleElement.style.strokeDashoffset = strokeDashoffset;
+                
+                svg.appendChild(circleElement);
+                circle.insertBefore(svg, circle.firstChild);
+            });
+        });
     </script>
 
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>

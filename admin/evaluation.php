@@ -56,10 +56,172 @@ $itData = getAdminEvaluationProgress($conn, 'IT Department', $adminId);
     <link href="../css/calendar.css" rel="stylesheet"/>
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-dark: #0f172a;
+            --primary-light: #1e293b;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+        }
+
+        /* Main Layout */
+        main.bg-black {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-light));
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        /* Header Styles */
+        .container-fluid h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .container-fluid h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 2px;
+        }
+
+        /* Department Cards Grid */
+        .row.justify-content-center {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem;
+        }
+
+        /* Card Styling */
+        .card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Card Header */
+        .card-body.bg-primary {
+            background: linear-gradient(135deg, #1e40af, #3b82f6) !important;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-body.bg-primary a {
+            color: var(--text-primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Card Footer */
+        .card-footer {
+            background: var(--primary-light);
+            padding: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+        }
+
+        .card-footer .small {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .card-footer .small i {
+            transition: transform 0.3s ease;
+        }
+
+        .card-footer.collapsed .small i {
+            transform: rotate(180deg);
+        }
+
+        /* Card Collapse */
+        .collapse {
+            background: var(--primary-dark);
+            padding: 1rem;
+        }
+
+        .collapse .card-body {
+            padding: 1rem;
+        }
+
+        .collapse .card-body h5 {
+            color: var(--text-primary);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .collapse .card-body .badge {
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+        }
+
+        .collapse .card-body .badge-primary {
+            background: var(--accent-blue);
+            color: var(--text-primary);
+        }
+
+        .collapse .card-body .badge-success {
+            background: var(--success);
+            color: var(--text-primary);
+        }
+
+        .collapse .card-body .badge-warning {
+            background: var(--warning);
+            color: var(--text-primary);
+        }
+
+        .collapse .card-body .progress {
+            height: 1rem;
+            border-radius: 9999px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .collapse .card-body .progress-bar {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .collapse .card-body .progress-bar.bg-success {
+            background: var(--success);
+        }
+
+        .collapse .card-body .progress-bar.bg-warning {
+            background: var(--warning);
+        }
+
+        .collapse .card-body .progress-bar.bg-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+        }
+    </style>
 </head>
-<style>
-    
-</style>
 <body class="sb-nav-fixed bg-black">
     <nav class="sb-topnav navbar navbar-expand navbar-dark border-bottom border-1 border-warning bg-dark">
         <a class="navbar-brand ps-3 text-muted" href="../admin/dashboard.php">Microfinance</a>

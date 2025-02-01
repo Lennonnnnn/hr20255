@@ -46,30 +46,68 @@ function getTopEmployeesByCriterion($conn, $criterion, $criterionLabel, $index) 
             if (file_exists($row['pfp']) && !empty($row['pfp'])) {
                 $pfp = base64_encode(file_get_contents($row['pfp']));
             } else {
-                $pfp = $defaultPfp; // Use default profile picture
+                $pfp = $defaultPfp;
             }
 
-            echo "<div class='card mb-3' style='max-width: 100%; margin-top: 20px; border: 2px solid #ddd; border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); padding: 20px; background-color: #f9f9f9;'>"; // Style for certificate look
-            echo "<div class='row no-gutters' style='height: 100%;'>";
-            echo "<div class='col-md-4' style='height: 100%;'>";
-            if (!empty($pfp) && $pfp != 'default_profile_image_base64_data_here') { 
-                // Apply the border only if it's not the default profile picture
-                echo "<img src='data:image/jpeg;base64,$pfp' class='card-img' alt='Profile Picture' style='width: 200px; height: 200px; object-fit: cover; border-radius: 100px; border: 2px solid black;'>";
-            } else {
-                // For default profile picture, no border
-                echo "<img src='data:image/jpeg;base64,$pfp' class='card-img' alt='Profile Picture' style='width: 150px; height: 150px; object-fit: cover; border-radius: 15px;'>";
+            // Calculate percentage for the progress circle
+            $scorePercentage = ($row['avg_score'] / 10) * 100;
+            
+            echo "<div class='employee-card'>";
+            
+            
+            echo "<div class='metrics-container'>";
+            
+            // Left metrics
+            echo "<div class='metrics-column'>";
+            echo "<div class='metric-box fade-in'>";
+            echo "<span class='metric-label'>Projects Completed</span>";
+            echo "<span class='metric-value'>10</span>";
+            echo "</div>";
+            
+            echo "<div class='metric-box fade-in' style='animation-delay: 0.2s;'>";
+            echo "<span class='metric-label'>Project Quality</span>";
+            echo "<span class='metric-value'>92%</span>";
+            echo "</div>";
+            echo "</div>";
+
+            // Center profile section
+            echo "<div class='profile-section'>";
+            echo "<div class='progress-circle-container'>";
+            echo "<div class='progress-circle' data-progress='" . $scorePercentage . "'>";
+            echo "<div class='profile-image-container'>";
+            if (!empty($pfp)) {
+                echo "<img src='data:image/jpeg;base64,$pfp' alt='Profile Picture' class='profile-image'>";
             }
-            echo "</div>";            
-            echo "<div class='col-md-8' style='height: 100%; display: flex; flex-direction: column; justify-content: center; padding-left: 20px;'>";
-            echo "<div class='card-body' style='height: 100%;'>";
-            echo "<h1 class='card-title' style='font-size: 40px; font-weight: bold; color: #333;'>" . htmlspecialchars($row['firstname'] . ' ' . $row['lastname']) . "</h1>";
-            echo "<p class='card-text fs-5 text-dark'><strong>Department:</strong> " . htmlspecialchars($row['department']) . "</p>";
-            echo "<p class='card-text fs-5 text-dark'><strong>$criterionLabel Score:</strong> " . number_format($row['avg_score'], 2) . "</p>";  // Display average score
-            echo "<p class='card-text fs-5 text-dark'><strong>Employee ID:</strong> " . htmlspecialchars($row['e_id']) . "</p>";
-            echo "</div>"; // End of card-body
-            echo "</div>"; // End of col-md-8
-            echo "</div>"; // End of row
-            echo "</div>"; // End of card
+            echo "</div>";
+            echo "</div>";
+            echo "</div>";
+            
+            echo "<div class='profile-info'>";
+            echo "<h2 class='employee-name'>" . htmlspecialchars($row['firstname'] . ' ' . $row['lastname']) . "</h2>";
+            echo "<p class='department-name'>" . htmlspecialchars($row['department']) . "</p>";
+            echo "</div>";
+            echo "</div>";
+
+            // Right metrics
+            echo "<div class='metrics-column'>";
+            echo "<div class='metric-box fade-in' style='animation-delay: 0.4s;'>";
+            echo "<span class='metric-label'>Efficiency</span>";
+            echo "<span class='metric-value'>60%</span>";
+            echo "</div>";
+            
+            echo "<div class='metric-box fade-in' style='animation-delay: 0.6s;'>";
+            echo "<span class='metric-label'>Timeline</span>";
+            echo "<span class='metric-value'>75%</span>";
+            echo "</div>";
+            echo "</div>";
+            
+            echo "</div>"; // End metrics-container
+            
+            echo "<div class='employee-id fade-in' style='animation-delay: 0.8s;'>";
+            echo "Employee ID: " . htmlspecialchars($row['e_id']);
+            echo "</div>";
+            
+            echo "</div>"; // End employee-card
         }
     } else {
         echo "<p class='text-center'>No outstanding employees found for $criterionLabel.</p>";
@@ -155,17 +193,7 @@ $reactions = getReactions($conn);
         .btn:hover {
             transform: translateY(-2px); /* Raise the button up */
         }
-        {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f4f4f9;
-            flex-direction: column;
-        }
+        
         .emoji-container {
             display: none;
             gap: 15px;
@@ -219,7 +247,167 @@ $reactions = getReactions($conn);
             font-size: 50px;
             margin-top: 20px;
         }
-</style>
+        .employee-card {
+            background: linear-gradient(135deg, #172554 0%, #1e3a8a 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 2rem auto;
+            color: white;
+        }
+
+        .dashboard-title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            color: white;
+        }
+
+        .metrics-container {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .metrics-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .metric-box {
+            background: rgba(64, 61, 223, 0.27);
+            border-radius: 15px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metric-label {
+            color: #22d3ee;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 1.875rem;
+            font-weight: bold;
+        }
+
+        .profile-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-circle-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+
+        .progress-circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            background: #1e3a8a;
+        }
+
+        .profile-image-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid #22d3ee;
+            overflow: hidden;
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-info {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .employee-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .department-name {
+            color: #22d3ee;
+            font-size: 0.875rem;
+        }
+
+        .employee-id {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 1rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        /* Progress Circle Animation */
+        @keyframes progressCircle {
+            from {
+                stroke-dashoffset: 628;
+            }
+            to {
+                stroke-dashoffset: var(--progress);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .metrics-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .employee-card {
+                margin: 1rem;
+                padding: 1rem;
+            }
+        }
+
+        /* Additional styles for progress circle */
+        .progress-ring {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.5s ease-out;
+        }
+    </style>
 </head>
 <body class="sb-nav-fixed bg-black">
     <nav class="sb-topnav navbar navbar-expand navbar-dark border-bottom border-1 border-warning bg-dark">
@@ -388,35 +576,35 @@ $reactions = getReactions($conn);
                         <button class="btn btn-primary" onclick="showNextCategory()">Next</button>
                     </div>
                     
-    <button class="open-btn" onclick="toggleEmojis()">Open Emoji Reactions</button>
+                    <button class="open-btn" onclick="toggleEmojis()">Open Emoji Reactions</button>
 
-    <div class="emoji-container" id="emojiContainer">
-        <form method="POST" id="reactionForm">
-            <input type="hidden" name="reaction" id="reactionInput">
-            <div class="emoji" onclick="submitReaction('Like')">👍</div>
-            <div class="emoji" onclick="submitReaction('Love')">❤️</div>
-            <div class="emoji" onclick="submitReaction('Haha')">😂</div>
-            <div class="emoji" onclick="submitReaction('Wow')">😲</div>
-            <div class="emoji" onclick="submitReaction('Sad')">😢</div>
-            <div class="emoji" onclick="submitReaction('Angry')">😡</div>
-        </form>
-    </div>
+                    <div class="emoji-container" id="emojiContainer">
+                        <form method="POST" id="reactionForm">
+                            <input type="hidden" name="reaction" id="reactionInput">
+                            <div class="emoji" onclick="submitReaction('Like')">👍</div>
+                            <div class="emoji" onclick="submitReaction('Love')">❤️</div>
+                            <div class="emoji" onclick="submitReaction('Haha')">😂</div>
+                            <div class="emoji" onclick="submitReaction('Wow')">😲</div>
+                            <div class="emoji" onclick="submitReaction('Sad')">😢</div>
+                            <div class="emoji" onclick="submitReaction('Angry')">😡</div>
+                        </form>
+                    </div>
 
-    <div class="reaction" id="reactionText"></div>
+                    <div class="reaction" id="reactionText"></div>
 
-    <div class="saved-reaction" id="savedReactionText"></div>
+                    <div class="saved-reaction" id="savedReactionText"></div>
 
-    <div class="selected-emoji" id="selectedEmoji"></div>
+                    <div class="selected-emoji" id="selectedEmoji"></div>
 
-    <div class="reaction-count">
-        <?php foreach ($reactions as $reaction => $count): ?>
-            <div class="reaction-item">
-                <span><?php echo htmlspecialchars($reaction); ?></span>
-                <span><?php echo $count; ?></span>
-                <span class="user-reaction" style="display: none;">(You)</span>
-            </div>
-        <?php endforeach; ?>
-    </div>
+                    <div class="reaction-count">
+                        <?php foreach ($reactions as $reaction => $count): ?>
+                            <div class="reaction-item">
+                                <span><?php echo htmlspecialchars($reaction); ?></span>
+                                <span><?php echo $count; ?></span>
+                                <span class="user-reaction" style="display: none;">(You)</span>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
             </main>
                 <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
