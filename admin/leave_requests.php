@@ -109,6 +109,54 @@ if (isset($_GET['leave_id']) && isset($_GET['status'])) {
     }
     exit();
 }
+
+// Function to divide leave days into different types
+function divideLeaveDays($totalDays) {
+    $leaveTypes = [
+        'Sick Leave' => 0.3, // 30% of total days
+        'Vacation Leave' => 0.5, // 50% of total days
+        'Emergency Leave' => 0.2 // 20% of total days
+    ];
+
+    $allocatedLeaves = [];
+    foreach ($leaveTypes as $type => $percentage) {
+        $allocatedLeaves[$type] = floor($totalDays * $percentage);
+    }
+
+    // Adjust any remaining days
+    $remainingDays = $totalDays - array_sum($allocatedLeaves);
+    if ($remainingDays > 0) {
+        $allocatedLeaves['Vacation Leave'] += $remainingDays;
+    }
+
+    return $allocatedLeaves;
+}
+
+// Handle form submission for setting leave allocations
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['employee_leaves']) && isset($_POST['employee_id'])) {
+    $totalDays = intval($_POST['employee_leaves']);
+    $employeeId = $_POST['employee_id'];
+    $allocatedLeaves = divideLeaveDays($totalDays);
+
+    if ($employeeId === 'all') {
+        // Update leave allocations for all employees
+        $sql = "UPDATE employee_register SET sick_leave = ?, vacation_leave = ?, emergency_leave = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("iii", $allocatedLeaves['Sick Leave'], $allocatedLeaves['Vacation Leave'], $allocatedLeaves['Emergency Leave']);
+    } else {
+        // Update leave allocations for a specific employee
+        $sql = "UPDATE employee_register SET sick_leave = ?, vacation_leave = ?, emergency_leave = ? WHERE e_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("iiii", $allocatedLeaves['Sick Leave'], $allocatedLeaves['Vacation Leave'], $allocatedLeaves['Emergency Leave'], $employeeId);
+    }
+
+    if ($stmt->execute()) {
+        header("Location: ../admin/leave_requests.php?status=success");
+    } else {
+        header("Location: ../admin/leave_requests.php?status=error");
+    }
+    exit();
+}
 ?>
 
 
@@ -507,6 +555,52 @@ if (isset($_GET['leave_id']) && isset($_GET['status'])) {
                         </div>
                     </div>
                 </div>
+
+                <!-- New Modal for Converting Leave Days to Money -->
+                <div class="modal fade" id="convertLeaveModal" tabindex="-1" aria-labelledby="convertLeaveModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content bg-dark text-light">
+                            <div class="modal-header border-bottom border-warning">
+                                <h5 class="modal-title" id="convertLeaveModalLabel">Convert Your Leave Days to Money</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table text-light">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2">Convert Your Leave Days to Money</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Enter number of leave days:</td>
+                                            <td><input type="number" id="leaveDays" required></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Enter your daily rate (in Peso):</td>
+                                            <td><input type="number" id="dailyRate" required></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" class="text-center">
+                                                <button id="calculateBtn" class="btn btn-primary">Calculate</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" class="text-center">
+                                                <p id="resultMessage" class="result"></p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="modal-footer border-top border-warning">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End of New Modal -->
+
             </main>
                 <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
@@ -641,6 +735,34 @@ if (isset($_GET['leave_id']) && isset($_GET['status'])) {
     
 
 
+        // Add the openModal and closeModal functions
+        document.getElementById('openModalBtn').onclick = function() {
+            document.getElementById('convertLeaveModal').style.display = 'block'; // Show modal
+        };
+
+        document.querySelector('.close').onclick = function() {
+            document.getElementById('convertLeaveModal').style.display = 'none';
+        };
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('convertLeaveModal')) {
+                document.getElementById('convertLeaveModal').style.display = 'none';
+            }
+        };
+
+        // Function to calculate the conversion of leave days to money
+        document.getElementById('calculateBtn').onclick = function() {
+            const leaveDays = document.getElementById('leaveDays').value;
+            const dailyRate = document.getElementById('dailyRate').value;
+            const resultMessage = document.getElementById('resultMessage');
+
+            if (leaveDays && dailyRate) {
+                const totalAmount = leaveDays * dailyRate;
+                resultMessage.textContent = `Total Amount: ₱${totalAmount}`;
+            } else {
+                resultMessage.textContent = 'Please enter both leave days and daily rate.';
+            }
+        };
 </script>
 <!-- Only keep the latest Bootstrap 5 version -->
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>

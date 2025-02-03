@@ -23,15 +23,16 @@ if (!isset($_SESSION['e_id'])) {
       background-color: #f4f4f9;
       margin: 0;
       padding: 0;
+      overflow: hidden; /* Prevents scroll bar */
     }
 
     .container {
-      display: none; /* Hide the container initially */
-      position: fixed;
-      top: 50%;
+      display: block;
+      position: absolute; /* Changed from fixed to absolute */
+      top: 10%; /* Adjusted top position to move the container to the top */
       left: 50%;
-      transform: translate(-50%, -50%);
-      width: 450px; /* Increased container width */
+      transform: translate(-50%, 0); /* Removed vertical centering */
+      width: 450px;
       padding: 20px;
       background-color: white;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -40,7 +41,7 @@ if (!isset($_SESSION['e_id'])) {
     }
 
     .modal-overlay {
-      display: none; /* Hide the overlay initially */
+      display: block; /* Show the overlay initially */
       position: fixed;
       top: 0;
       left: 0;
@@ -83,8 +84,8 @@ if (!isset($_SESSION['e_id'])) {
     }
 
     button {
-      width: 100%;
-      padding: 10px;
+      width: 15%; /* Make buttons smaller */
+      padding: 5px; /* Adjust padding */
       background-color: #4CAF50;
       color: white;
       border: none;
@@ -95,6 +96,11 @@ if (!isset($_SESSION['e_id'])) {
 
     button:hover {
       background-color: #45a049;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: space-between; /* Place buttons on each side */
     }
 
     #leaveStatus p {
@@ -127,15 +133,97 @@ if (!isset($_SESSION['e_id'])) {
       width: 100%; /* Make input element fill the cell */
       box-sizing: border-box; /* Ensure padding is considered inside the input */
     }
+
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1; /* Sit on top */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
+      display: flex; /* Use flexbox for centering */
+      justify-content: center; /* Center horizontally */
+      align-items: center; /* Center vertically */
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      padding: 20px;
+      border: 1px solid #888;
+      border-radius: 8px; /* Rounded corners */
+      width: 90%; /* Increased width */
+      max-width: 700px; /* Increased maximum width */
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3); /* Add shadow */
+      animation: fadeIn 0.3s; /* Fade-in animation */
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
-  <button onclick="openModal()">Open Leave Tracker</button>
-
-  <div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
+  <!-- Removed the "Open Leave Tracker" button -->
+  <!-- Removed the modal overlay and its functionality -->
 
   <div class="container" id="leaveTrackerModal">
     <h1>Leave Tracker</h1>
+    <div class="button-container">
+      <button onclick="window.history.back();">Back</button>
+      <button id="openModalBtn">Open Converter</button>
+    </div> <!-- Added missing closing div tag for button-container -->
+
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <table>
+          <thead>
+            <tr>
+              <th colspan="2">Convert Your Leave Days to Money</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Enter number of leave days:</td>
+              <td><input type="number" id="leaveDays" required></td>
+            </tr>
+            <tr>
+              <td>Enter your daily rate (in Peso):</td>
+              <td><input type="number" id="dailyRate" required></td>
+            </tr>
+            <tr>
+              <td colspan="2" style="text-align: center;">
+                <button id="calculateBtn">Calculate</button>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" style="text-align: center;">
+                <p id="resultMessage" class="result"></p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <br> <!-- Added space instead of separator -->
     <div class="table-container">
       <table>
         <tr>
@@ -173,17 +261,23 @@ if (!isset($_SESSION['e_id'])) {
       </table>
     </div>
   </div>
+  
 
   <script>
-    function openModal() {
-      document.getElementById('leaveTrackerModal').style.display = 'block';
-      document.getElementById('modalOverlay').style.display = 'block';
-    }
+    // Add the openModal and closeModal functions
+    document.getElementById('openModalBtn').onclick = function() {
+      document.getElementById('myModal').style.display = 'flex'; // Use flex to center
+    };
 
-    function closeModal() {
-      document.getElementById('leaveTrackerModal').style.display = 'none';
-      document.getElementById('modalOverlay').style.display = 'none';
-    }
+    document.querySelector('.close').onclick = function() {
+      document.getElementById('myModal').style.display = 'none';
+    };
+
+    window.onclick = function(event) {
+      if (event.target == document.getElementById('myModal')) {
+        document.getElementById('myModal').style.display = 'none';
+      }
+    };
 
     function calculateRemainingLeaves() {
       // Get the input values

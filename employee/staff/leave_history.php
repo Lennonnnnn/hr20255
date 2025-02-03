@@ -214,7 +214,7 @@ function calculateLeaveDays($start_date, $end_date) {
                                 ?>
                             </td>
                             <td>
-                                <div class="d-flex justify-content-around">
+                                <div class="btn-group" role="group">
                                     <button class="btn btn-sm btn-info" onclick="viewItem()">View</button>
                                     <button class="btn btn-sm btn-warning" onclick="editItem()">Edit</button>
                                     <button class="btn btn-sm btn-danger" onclick="deleteItem()" <?php if ($row['status'] === 'Approved') echo 'disabled'; ?>>Delete</button>

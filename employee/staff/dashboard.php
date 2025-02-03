@@ -193,7 +193,9 @@ if ($result->num_rows > 0) {
                 <button class="btn btn-warning" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
             </div>
             </form>
-           
+            <div class="text-light ms-3">
+                <?php echo htmlspecialchars($employeeInfo['firstname'] . ' ' . $employeeInfo['lastname']); ?>
+            </div>
         </div>
     </nav>
     <div id="layoutSidenav">
@@ -894,5 +896,3 @@ if ($result->num_rows > 0) {
 </body>
 
 </html>
-
-

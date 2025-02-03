@@ -18,6 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Check if the email exists in the admin_register table
         $sql = "SELECT firstname, lastname FROM employee_register WHERE email = ?";
         $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("Prepare statement failed: " . $conn->error);
+        }
         $stmt->bind_param('s', $email);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -35,6 +38,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Store token and expiration in the database
             $sql = "INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)";
             $stmt = $conn->prepare($sql);
+            if (!$stmt) {
+                throw new Exception("Prepare statement failed: " . $conn->error);
+            }
             $stmt->bind_param('sss', $email, $token, $expiresAt);  // Correct parameter binding
             $stmt->execute();
 
@@ -83,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             header('Location: ' . $_SERVER['REQUEST_URI']); // Refresh the current page
             exit;
         } else {
-            $_SESSION['message'] = '<div class="alert alert-danger text-center">Email does not exist.</div>';
+            $_SESSION['message'] = '<div class="alert alert-danger text-center">Email not found.</div>';
             header('Location: ' . $_SERVER['REQUEST_URI']); // Refresh the current page
             exit;
         }
