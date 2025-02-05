@@ -163,7 +163,10 @@ $conn->close();
                         </a>
                         <div class="collapse" id="collapsePM" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                            <a class="nav-link text-light" href="../../employee/supervisor/evaluation.php">Evaluation</a>
+                                <a class="nav-link text-light" href="../../employee/supervisor/evaluation.php">View Ratings</a>
+                            </nav>
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link text-light" href="../../employee/supervisor/department.php">Department Evaluation</a>
                             </nav>
                         </div>
                         <a class="nav-link collapsed text-light" href="#" data-bs-toggle="collapse" data-bs-target="#collapseSR" aria-expanded="false" aria-controls="collapseSR">

@@ -198,7 +198,7 @@ $profilePicture = !empty($employeeInfo['profile_picture']) ? $employeeInfo['prof
                         </a>
                         <div class="collapse" id="collapseSR" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link text-light" href="">View Your Rating</a>
+                                <a class="nav-link text-light" href="../../employee/supervisor/awardee.php">View Your Rating</a>
                             </nav>
                         </div> 
                         <div class="sb-sidenav-menu-heading text-center text-muted border-top border-1 border-warning mt-3">Feedback</div> 

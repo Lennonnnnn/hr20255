@@ -264,7 +264,7 @@ if ($result->num_rows > 0) {
                         </a>
                         <div class="collapse" id="collapsePM" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link text-light" href="../../employee/staffr/evaluation.php">View Ratings</a>
+                                <a class="nav-link text-light" href="../../employee/staff/evaluation.php">View Ratings</a>
                             </nav>
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link text-light" href="../../employee/staff/department.php">Department Evaluation</a>

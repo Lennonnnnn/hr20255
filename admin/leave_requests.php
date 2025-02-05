@@ -500,8 +500,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['employee_leaves']) &&
 
                                             <td class="text-center">
                                                 <div class="d-flex justify-content-center mb-0">
-                                                <button class="btn btn-success btn-sm me-2" onclick="confirmAction('approve', <?php echo $row['leave_id']; ?>)">Approve</button>
-                                                <button class="btn btn-danger btn-sm" onclick="confirmAction('deny', <?php echo $row['leave_id']; ?>)">Deny</button>
+                                                    <button class="btn btn-success btn-sm me-2" onclick="showModal('approve', <?php echo $row['leave_id']; ?>)">Approve</button>
+                                                    <button class="btn btn-danger btn-sm" onclick="showModal('deny', <?php echo $row['leave_id']; ?>)">Deny</button>
+                                                </div>
                                             </td>
                                         </tr>
                                         <?php endwhile; ?>
@@ -600,6 +601,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['employee_leaves']) &&
                     </div>
                 </div>
                 <!-- End of New Modal -->
+
+                <!-- Modal for Confirming Approve/Deny Actions -->
+                <div class="modal fade" id="confirmActionModal" tabindex="-1" aria-labelledby="confirmActionModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content bg-dark text-light">
+                            <div class="modal-header border-bottom border-warning">
+                                <h5 class="modal-title" id="confirmActionModalLabel">Confirm Action</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p id="confirmActionMessage"></p>
+                            </div>
+                            <div class="modal-footer border-top border-warning">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="confirmActionButton">Confirm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End of Modal -->
 
             </main>
                 <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
@@ -763,6 +784,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['employee_leaves']) &&
                 resultMessage.textContent = 'Please enter both leave days and daily rate.';
             }
         };
+
+        // Function to show the confirmation modal
+        function showModal(action, requestId) {
+            const modal = new bootstrap.Modal(document.getElementById('confirmActionModal'));
+            const message = `Are you sure you want to ${action} this leave request?`;
+            document.getElementById('confirmActionMessage').textContent = message;
+            document.getElementById('confirmActionButton').onclick = function() {
+                window.location.href = `leave_requests.php?leave_id=${requestId}&status=${action}`;
+            };
+            modal.show();
+        }
 </script>
 <!-- Only keep the latest Bootstrap 5 version -->
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>

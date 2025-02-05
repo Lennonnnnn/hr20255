@@ -18,13 +18,13 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $employeeId);
 $stmt->execute();
 $result = $stmt->get_result();
-$adminInfo = $result->fetch_assoc();
+$employeeInfo = $result->fetch_assoc();
 
 // Fetch all pending leave requests for supervisors to handle
-$sql = "SELECT lr.leave_id, e.e_id, e.firstname, e.lastname, e.department, e.available_leaves, lr.start_date, lr.end_date, lr.leave_type, lr.proof, lr.status
+$sql = "SELECT lr.leave_id, e.e_id, e.firstname, e.lastname, e.department, e.available_leaves, lr.start_date, lr.end_date, lr.leave_type, lr.proof, lr.status, lr.created_at
         FROM leave_requests lr
         JOIN employee_register e ON lr.e_id = e.e_id
-        WHERE lr.status = 'Pending'";  // Fetch only Pending requests
+        WHERE lr.status = 'Pending' ORDER BY created_at ASC";  // Fetch only Pending requests
 
 $stmt = $conn->prepare($sql);
 $stmt->execute();
@@ -113,6 +113,7 @@ if (isset($_GET['leave_id']) && isset($_GET['status'])) {
 }
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -120,12 +121,11 @@ if (isset($_GET['leave_id']) && isset($_GET['status'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <link rel="icon" type="image/png" href="../../img/logo.png">
     <title>Leave Requests</title>
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet">
     <link href="../../css/styles.css" rel="stylesheet" />
     <link href="../../css/calendar.css" rel="stylesheet"/>
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' /> <!-- calendar -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- leave table -->
 <style>
     .btn {
         transition: transform 0.3s, background-color 0.3s; /* Smooth transition */
@@ -167,7 +167,7 @@ if (isset($_GET['leave_id']) && isset($_GET['status'])) {
         </div>
     </nav>
     <div id="layoutSidenav">
-    <div id="layoutSidenav_nav">
+        <div id="layoutSidenav_nav">
             <nav class="sb-sidenav accordion bg-dark" id="sidenavAccordion">
                 <div class="sb-sidenav-menu ">
                     <div class="nav">
@@ -175,9 +175,9 @@ if (isset($_GET['leave_id']) && isset($_GET['status'])) {
                         <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
                             <li class="nav-item dropdown text">
                                 <a class="nav-link dropdown-toggle text-light d-flex justify-content-center ms-4" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <img src="<?php echo (!empty($adminInfo['pfp']) && $adminInfo['pfp'] !== 'defaultpfp.png') 
-                                        ? htmlspecialchars($adminInfo['pfp']) 
-                                        : '../img/defaultpfp.jpg'; ?>" 
+                                    <img src="<?php echo (!empty($employeeInfo['pfp']) && $employeeInfo['pfp'] !== 'defaultpfp.png') 
+                                        ? htmlspecialchars($employeeInfo['pfp']) 
+                                        : '../../img/defaultpfp.jpg'; ?>" 
                                         class="rounded-circle border border-light" width="120" height="120" alt="Profile Picture" />
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
@@ -185,23 +185,23 @@ if (isset($_GET['leave_id']) && isset($_GET['status'])) {
                                     <li><a class="dropdown-item" href="#!">Settings</a></li>
                                     <li><a class="dropdown-item" href="#!">Activity Log</a></li>
                                     <li><hr class="dropdown-divider" /></li>
-                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a></li>
-                               </ul>
+                                    <li><a class="dropdown-item" href="../../employee/supervisor/logout.php" onclick="confirmLogout(event)">Logout</a></li>
+                                </ul>
                             </li>
                             <li class="nav-item text-light d-flex ms-3 flex-column align-items-center text-center">
                                 <span class="big text-light mb-1">
                                     <?php
-                                        if ($adminInfo) {
-                                        echo htmlspecialchars($adminInfo['firstname'] . ' ' . $adminInfo['middlename'] . ' ' . $adminInfo['lastname']);
+                                        if ($employeeInfo) {
+                                        echo htmlspecialchars($employeeInfo['firstname'] . ' ' . $employeeInfo['middlename'] . ' ' . $employeeInfo['lastname']);
                                         } else {
-                                        echo "Admin information not available.";
+                                        echo "User information not available.";
                                         }
                                     ?>
                                 </span>      
                                 <span class="big text-light">
                                     <?php
-                                        if ($adminInfo) {
-                                        echo htmlspecialchars($adminInfo['position']);
+                                        if ($employeeInfo) {
+                                        echo htmlspecialchars($employeeInfo['position']);
                                         } else {
                                         echo "User information not available.";
                                         }
@@ -243,7 +243,10 @@ if (isset($_GET['leave_id']) && isset($_GET['status'])) {
                         </a>
                         <div class="collapse" id="collapsePM" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link text-light" href="../../employee/supervisor/evaluation.php">Evaluation</a>
+                                <a class="nav-link text-light" href="../../employee/supervisor/evaluation.php">View Ratings</a>
+                            </nav>
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link text-light" href="../../employee/supervisor/department.php">Department Evaluation</a>
                             </nav>
                         </div>
                         <a class="nav-link collapsed text-light" href="#" data-bs-toggle="collapse" data-bs-target="#collapseSR" aria-expanded="false" aria-controls="collapseSR">
@@ -253,7 +256,7 @@ if (isset($_GET['leave_id']) && isset($_GET['status'])) {
                         </a>
                         <div class="collapse" id="collapseSR" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                              <a class="nav-link text-light" href="">Awardee</a>
+                              <a class="nav-link text-light" href="../../employee/supervisor/awardee.php">Awardee</a>
                             </nav>
                         </div>
                         <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
@@ -272,75 +275,75 @@ if (isset($_GET['leave_id']) && isset($_GET['status'])) {
                     </div>
                 </div>
                 <div class="sb-sidenav-footer bg-black text-light border-top border-1 border-warning">
-                    <div class="small">Logged in as: <?php echo htmlspecialchars($adminInfo['role']); ?></div>
+                    <div class="small">Logged in as: <?php echo htmlspecialchars($employeeInfo['role']); ?></div>
                 </div>
             </nav>
         </div>
-    <div id="layoutSidenav_content">
-        <main>
-        <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content bg-dark text-light">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
-                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    Are you sure you want to log out?
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                    <form action="../../employee/logout.php" method="POST">
-                                        <button type="submit" class="btn btn-danger">Logout</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-            <div class="container-fluid position-relative px-4">
-                <h1 class="mb-4 text-light">Leave Requests</h1>
-                <div class="container" id="calendarContainer" 
-                    style="position: fixed; top: 9%; right: 0; z-index: 1050; 
-                    width: 700px; display: none;">
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid position-relative px-4">
+                    <h1 class="mb-4 text-light">Leave Request</h1>
+                    <div class="container" id="calendarContainer" 
+                        style="position: fixed; top: 9%; right: 0; z-index: 1050; 
+                        width: 700px; display: none;">
                         <div class="row">
                             <div class="col-md-12">
                                 <div id="calendar" class="p-2"></div>
                             </div>
                         </div>
-                </div>                     
-                <div class="container py-4">
-                    <?php if (isset($_GET['status'])): ?>
-                        <div id="status-alert" class="alert 
-                            <?php if ($_GET['status'] === 'success'): ?>
-                                alert-success
-                            <?php elseif ($_GET['status'] === 'error'): ?>
-                                alert-danger
-                            <?php elseif ($_GET['status'] === 'not_exist'): ?>
-                                alert-warning
-                            <?php elseif ($_GET['status'] === 'insufficient_balance'): ?>
-                                alert-warning
-                            <?php endif; ?>" role="alert">
-                            <?php if ($_GET['status'] === 'success'): ?>
-                                Leave request status updated successfully.
-                            <?php elseif ($_GET['status'] === 'error'): ?>
-                                Error updating leave request status. Please try again.
-                            <?php elseif ($_GET['status'] === 'not_exist'): ?>
-                                The leave request ID does not exist or could not be found.
-                            <?php elseif ($_GET['status'] === 'insufficient_balance'): ?>
-                                Insufficient leave balance. The request cannot be approved.
-                            <?php endif; ?>
+                    </div>                     
+                    <div class="container py-4">
+                        <!-- Status Modal -->
+                        <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content bg-dark">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title text-light" id="statusModalLabel">Status Update</h5>
+                                        <button type="button" class="close text-light bg-dark" data-bs-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body text-light">
+                                        <p id="statusMessage"><center></center></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    <?php endif; ?>
+                        <?php if (isset($_GET['status'])): ?>
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    const statusMessage = document.getElementById('statusMessage');
+                                    const statusModal = new bootstrap.Modal(document.getElementById('statusModal'));
 
-                    <div class="card mb-4 bg-dark">
-                        <div class="card-header border-bottom border-1 border-warning text-light">
+                                    <?php if ($_GET['status'] === 'success'): ?>
+                                        statusMessage.textContent = 'Leave request status updated successfully.';
+                                    <?php elseif ($_GET['status'] === 'error'): ?>
+                                        statusMessage.textContent = 'Error updating leave request status. Please try again.';
+                                    <?php elseif ($_GET['status'] === 'not_exist'): ?>
+                                        statusMessage.textContent = 'The leave request ID does not exist or could not be found.';
+                                    <?php elseif ($_GET['status'] === 'insufficient_balance'): ?>
+                                        statusMessage.textContent = 'Insufficient leave balance. The request cannot be approved.';
+                                    <?php endif; ?>
+
+                                    statusModal.show();
+                                });
+                            </script>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="card mb-4 bg-dark text-light">
+                        <div class="card-header border-bottom border-1 border-warning">
                             <i class="fas fa-table me-1"></i>
                             Pending Request
                         </div>
                         <div class="card-body">
-                            <table class=" col-md-12 table table-bordered mt-3 text-center text-light table-dark mx-auto"> 
+                            <table id="datatablesSimple" class="table text-light text-center">
                                 <thead>
                                     <tr>
+                                        <th>Requested On</th>
                                         <th>Employee ID</th>
                                         <th>Employee Name</th>
                                         <th>Department</th>
@@ -360,10 +363,10 @@ if (isset($_GET['leave_id']) && isset($_GET['status'])) {
                                                 $leave_days = 0;
                                                 $current_date = strtotime($row['start_date']);
                                                 $end_date = strtotime($row['end_date']);
-                                            
+                                                
                                                 while ($current_date <= $end_date) {
                                                 $current_date_str = date('Y-m-d', $current_date);
-                                                // Check if the current day is not a Sunday (0 = Sunday) and not a holiday
+                                                 // Check if the current day is not a Sunday (0 = Sunday) and not a holiday
                                                 if (date('N', $current_date) != 7 && !in_array($current_date_str, $holidays)) {
                                                     $leave_days++; // Count this day as a leave day
                                                 }
@@ -371,11 +374,20 @@ if (isset($_GET['leave_id']) && isset($_GET['status'])) {
                                                 }
                                             ?>
                                         <tr>
+                                        <td>
+                                            <?php 
+                                                if (isset($row['created_at'])) {
+                                                    echo htmlspecialchars(date("F j, Y", strtotime($row['created_at']))) . ' <span class="text-warning"> | </span> ' . htmlspecialchars(date("g:i A", strtotime($row['created_at'])));
+                                                } else {
+                                                    echo "Not Available";
+                                                }
+                                            ?>
+                                        </td>
                                             <td><?php echo htmlspecialchars($row['e_id']); ?></td>
                                             <td><?php echo htmlspecialchars($row['firstname'] . ' ' . $row['lastname']); ?></td>
                                             <td><?php echo htmlspecialchars($row['department']); ?></td>
                                             <td><?php echo htmlspecialchars($row['available_leaves']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['start_date'] . ' / ' . $row['end_date']); ?></td>
+                                            <td><?php echo htmlspecialchars(date("F j, Y", strtotime($row['start_date']))) . ' <span class="text-warning"> | </span> ' . htmlspecialchars(date("F j, Y", strtotime($row['end_date']))); ?></td>
                                             <td><?php echo htmlspecialchars($leave_days); ?> day/s</td>
                                             <td><?php echo htmlspecialchars($row['leave_type']); ?></td>
                                             <td>
@@ -388,40 +400,44 @@ if (isset($_GET['leave_id']) && isset($_GET['status'])) {
                                             <div class="modal fade" id="proofModal<?php echo $row['proof']; ?>" tabindex="-1" aria-labelledby="proofModalLabel<?php echo $row['proof']; ?>" aria-hidden="true">
                                                 <div class="modal-dialog modal-dialog-centered">
                                                     <div class="modal-content bg-dark text-light" style="width: 600px; height: 500px;">
-                                                        <div class="modal-header">
+                                                        <div class="modal-header border-bottom border-warning">
                                                             <h5 class="modal-title" id="proofModalLabel<?php echo $row['proof']; ?>">Proof of Leave</h5>
                                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
+                                                        </div>
                                                         <div class="modal-body d-flex align-items-center justify-content-center" style="overflow-y: auto; height: calc(100% - 80px);">
                                                             <div id="proofCarousel<?php echo $row['proof']; ?>" class="carousel slide d-flex align-items-center justify-content-center" data-bs-ride="false">
                                                                 <div class="carousel-inner">
                                                                     <?php
-                                                                        $filePaths = explode(',', $row['proof']);  // Assuming proof field contains a comma-separated list of file paths
-                                                                        $isActive = true;  // To set the first image as active
+                                                                        // Assuming proof field contains a comma-separated list of file names
+                                                                        $filePaths = explode(',', $row['proof']);  
+                                                                        $isActive = true;  // To set the first item as active
                                                                         $fileCount = count($filePaths);  // Count the number of files
+                                                                        $baseURL = 'http://localhost/HR2/proof/';  // Define the base URL for file access
+
                                                                         foreach ($filePaths as $filePath) {
-                                                                            $filePath = trim($filePath);  // Remove any extra spaces from the file paths
+                                                                            $filePath = trim($filePath);  // Clean the file path
+                                                                            $fullFilePath = $baseURL . $filePath;  // Construct the full URL for the file
                                                                             $fileExtension = pathinfo($filePath, PATHINFO_EXTENSION);
 
                                                                             // Check if the file is an image (e.g., jpg, jpeg, png, gif)
                                                                             $imageTypes = ['jpg', 'jpeg', 'png', 'gif'];
                                                                             if (in_array(strtolower($fileExtension), $imageTypes)) {
                                                                                 echo '<div class="carousel-item ' . ($isActive ? 'active' : '') . '">';
-                                                                                echo '<img src="' . htmlspecialchars($filePath) . '" alt="Proof of Leave" class="d-block w-100" style="max-height: 400px; object-fit: contain;">';
+                                                                                echo '<img src="' . htmlspecialchars($fullFilePath) . '" alt="Proof of Leave" class="d-block w-100" style="max-height: 400px; object-fit: contain;">';
                                                                                 echo '</div>';
                                                                                 $isActive = false;
                                                                             }
                                                                             // Check if the file is a PDF (this will just show an embed for PDFs)
                                                                             elseif (strtolower($fileExtension) === 'pdf') {
                                                                                 echo '<div class="carousel-item ' . ($isActive ? 'active' : '') . '">';
-                                                                                echo '<embed src="' . htmlspecialchars($filePath) . '" type="application/pdf" width="100%" height="400px" />';
+                                                                                echo '<embed src="' . htmlspecialchars($fullFilePath) . '" type="application/pdf" width="100%" height="400px" />';
                                                                                 echo '</div>';
                                                                                 $isActive = false;
                                                                             }
                                                                             // Handle other document types (e.g., docx, txt) – just provide a link to view the document
                                                                             else {
                                                                                 echo '<div class="carousel-item ' . ($isActive ? 'active' : '') . '">';
-                                                                                echo '<a href="' . htmlspecialchars($filePath) . '" target="_blank" class="btn btn-primary">View Document</a>';
+                                                                                echo '<a href="' . htmlspecialchars($fullFilePath) . '" target="_blank" class="btn btn-primary">View Document</a>';
                                                                                 echo '</div>';
                                                                                 $isActive = false;
                                                                             }
@@ -430,9 +446,9 @@ if (isset($_GET['leave_id']) && isset($_GET['status'])) {
                                                                 </div>
                                                             </div>
                                                         </div>
+
                                                         <!-- Check if there's only one file; if yes, hide the carousel controls -->
                                                         <?php if ($fileCount > 1): ?>
-                                                            <!-- Carousel Controls (Positioned to left and right side) -->
                                                             <button class="carousel-control-prev btn btn-secondary position-absolute top-50 start-0 translate-middle-y w-auto" type="button" data-bs-target="#proofCarousel<?php echo $row['proof']; ?>" data-bs-slide="prev">
                                                                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                                                 <span class="visually-hidden">Previous</span>
@@ -443,66 +459,41 @@ if (isset($_GET['leave_id']) && isset($_GET['status'])) {
                                                             </button>
                                                         <?php endif; ?>
 
-                                                        <div class="modal-footer">
+                                                        <div class="modal-footer border-top border-warning">
                                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
+
                                             <td class="text-center">
                                                 <div class="d-flex justify-content-center mb-0">
-                                                <button class="btn btn-success btn-sm me-2" onclick="confirmAction('approve', <?php echo $row['leave_id']; ?>)">Approve</button>
-                                                <button class="btn btn-danger btn-sm" onclick="confirmAction('deny', <?php echo $row['leave_id']; ?>)">Deny</button>
-                                                </td>
+                                                    <button class="btn btn-success btn-sm me-2" onclick="showConfirmModal('approve', <?php echo $row['leave_id']; ?>)">Approve</button>
+                                                    <button class="btn btn-danger btn-sm" onclick="showConfirmModal('deny', <?php echo $row['leave_id']; ?>)">Deny</button>
                                                 </div>
                                             </td>
                                         </tr>
                                         <?php endwhile; ?>
-                                            <?php else: ?>
-                                        <tr>
-                                            <td colspan="9" class="text-center">No pending request found.</td>
-                                        </tr>
                                     <?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-            </div>
-        </main>
-        <footer class="py-4 bg-dark text-light mt-auto border-top border-warning">
-            <div class="container-fluid px-4">
-                <div class="d-flex align-items-center justify-content-between small">
-                    <div class="text-muted">Copyright &copy; Your Website 2024</div>
-                    <div>
-                        <a href="#">Privacy Policy</a>
-                        &middot;
-                        <a href="#">Terms & Conditions</a>
+            </main>
+            <footer class="py-4 bg-dark text-light mt-auto border-top border-warning">
+                <div class="container-fluid px-4">
+                    <div class="d-flex align-items-center justify-content-between small">
+                        <div class="text-muted">Copyright &copy; Your Website 2024</div>
+                        <div>
+                            <a href="#">Privacy Policy</a>
+                            &middot;
+                            <a href="#">Terms & Conditions</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </footer>
-        <!-- Modal HTML -->
-        <div class="modal fade" id="confirmActionModal" tabindex="-1" aria-labelledby="confirmActionModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content bg-dark">
-                <div class="modal-header">
-                    <h5 class="modal-title text-light" id="confirmActionModalLabel">Confirm Action</h5>
-                    <button type="button" class="close text-light bg-dark" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span> <!-- This is the X button -->
-                    </button>
-                </div>
-                <div class="modal-body text-light">
-                    <p id="modalMessage"><center>Are you sure you want to approve this leave request?</p></center>
-                </div>
-                <div class="modal-footer">
-                    <button id="confirmBtn" class="btn btn-success">Confirm</button>
-                    <button id="cancelBtn" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </div>
+            </footer>
         </div>
-    </div>
-
     </div>
 <script>
     //CALENDAR 
@@ -580,140 +571,66 @@ if (isset($_GET['leave_id']) && isset($_GET['status'])) {
         //TIME END
 
         //LEAVE STATUS 
-        // Global variables to store action and leave ID temporarily
-        let action = '';
-        let requestId = '';
-
-        // Function to handle showing the modal and performing the action
-        function confirmAction(selectedAction, leaveId) {
-            // Store the action and leave ID
-            action = selectedAction;
-            requestId = leaveId;
-
-            // Get modal elements
-            const modal = new bootstrap.Modal(document.getElementById('confirmActionModal'));
+        function showConfirmModal(action, requestId) {
             const modalMessage = document.getElementById('modalMessage');
             const confirmBtn = document.getElementById('confirmBtn');
-            const cancelBtn = document.getElementById('cancelBtn');
 
-            // Set the confirmation message based on action (approve or deny)
-            //modalMessage.textContent = `Are you sure you want to ${action} this leave request?`;
-            
-            // Show the modal
-            modal.show();
+            if (action === 'approve') {
+                modalMessage.textContent = 'Are you sure you want to approve this leave request?';
+                confirmBtn.className = 'btn btn-success';
+            } else if (action === 'deny') {
+                modalMessage.textContent = 'Are you sure you want to deny this leave request?';
+                confirmBtn.className = 'btn btn-danger';
+            }
 
-            // Confirm action
             confirmBtn.onclick = function() {
-                // Redirect to the respective page to process the request
-                window.location.href = `leave_requests.php?leave_id=${requestId}&status=${action}`;
-                modal.hide(); // Close modal after confirming
-            }
+                window.location.href = `leave_request.php?leave_id=${requestId}&status=${action}`;
+            };
 
-            // Cancel action (using Bootstrap dismiss on cancel button)
-            cancelBtn.onclick = function() {
-                modal.hide(); // Close modal on cancel
-            }
+            const confirmActionModal = new bootstrap.Modal(document.getElementById('confirmActionModal'));
+            confirmActionModal.show();
         }
-
         //LEAVE STATUS END
 
-        $(document).ready(function() {
-    var table = $('.table').DataTable({
-        "paging": true,
-        "searching": true,
-        "ordering": true,
-        "info": true,
-        "autoWidth": false,
-        "responsive": true,
-        "language": {
-            "search": "Search:",  // Custom search label
-            "lengthMenu": "Display _MENU_ records per page",  // Custom display records label
-            "zeroRecords": "No matching records found",
-            "info": "Showing _START_ to _END_ of _TOTAL_ records",  // Custom info label
-            "infoEmpty": "No records available",
-            "infoFiltered": "(filtered from _MAX_ total records)"
-        },
-        "lengthMenu": [
-            [5, 10, 25, 50, -1],
-            ['5', '10', '25', '50', 'All']
-        ]
-    });
-
-    // Apply styles to the "Display X records per page" text
-    $('.dataTables_length label').css({
-        'color': '#007bff',  // Change text color to blue
-        'font-weight': 'bold'  // Make the text bold
-    });
-
-    // Apply styles to the "Search:" label
-    $('.dataTables_filter label').css({
-        'color': '#007bff',  // Change text color to blue
-        'font-weight': 'bold'  // Make the text bold
-    });
-
-    // Apply styles to the "Showing X to X of X records" text
-    $('.dataTables_info').css({
-        'color': '#007bff',  // Change text color to blue
-        'font-weight': 'bold'  // Make the text bold
-    });
-
-    // Apply styles to the "Search" input box
-    $('.dataTables_filter input').css({
-        'background-color': '#343a40',  // Dark background
-        'color': 'white',  // White text
-        'border': '1px solid #ddd'  // Light border
-    });
-
-    // Apply styles to the "Display records per page" select dropdown
-    $('.dataTables_length select').css({
-        'background-color': '#343a40',  // Dark background
-        'color': 'white',  // White text
-        'border': '1px solid #ddd'  // Light border
-    });
-
-        function applyPaginationStyles() {
-        // Pagination button styles
-        $('.dataTables_paginate .paginate_button').css({
-            'background-color': 'white',
-            'color': 'black',
-            'border': '1px solid #ddd'
-        });
-
-        // Active page button styles
-        $('.dataTables_paginate .paginate_button.current').css({
-            'background-color': 'white',
-            'border': '2px solid red'
-        });
-    }
-
-    // Apply the styles immediately after the table is drawn (including pagination)
-    table.on('draw', function() {
-        applyPaginationStyles();  // Apply styles after each page redraw
-    });
-
-    // Apply styles on initial load
-    applyPaginationStyles();
-});
-
-    // Automatically hide the alert after 10 seconds (10,000 milliseconds)
-    setTimeout(function() {
-        var alertElement = document.getElementById('status-alert');
-        if (alertElement) {
-            alertElement.style.transition = "opacity 1s ease"; // Add transition for smooth fade-out
-            alertElement.style.opacity = 0; // Set the opacity to 0 (fade out)
-            
-            setTimeout(function() {
-                alertElement.remove(); // Remove the element from the DOM after fade-out
-            }, 1000); // Wait 1 second after fade-out to remove the element completely
-        }
-    }, 5000); // 10 seconds delay
-
+        // Automatically hide the alert after 10 seconds (10,000 milliseconds)
+        setTimeout(function() {
+            var alertElement = document.getElementById('status-alert');
+            if (alertElement) {
+                alertElement.style.transition = "opacity 1s ease"; // Add transition for smooth fade-out
+                alertElement.style.opacity = 0; // Set the opacity to 0 (fade out)
+                
+                setTimeout(function() {
+                    alertElement.remove(); // Remove the element from the DOM after fade-out
+                }, 1000); // Wait 1 second after fade-out to remove the element completely
+            }
+        }, 5000); // 10 seconds delay
 </script>
 <!-- Only keep the latest Bootstrap 5 version -->
+<script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'> </script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="../../js/datatables-simple-demo.js"></script>
 <script src="../../js/employee.js"></script>
+
+<!-- Confirm Action Modal -->
+<div class="modal fade" id="confirmActionModal" tabindex="-1" aria-labelledby="confirmActionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title text-light" id="confirmActionModalLabel">Confirm Action</h5>
+                <button type="button" class="close text-light bg-dark" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-light">
+                <p id="modalMessage"><center></center></p>
+            </div>
+            <div class="modal-footer">
+                <button id="confirmBtn" class="btn btn-success">Confirm</button>
+                <button id="cancelBtn" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
-

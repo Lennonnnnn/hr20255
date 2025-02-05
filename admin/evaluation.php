@@ -56,197 +56,32 @@ $itData = getAdminEvaluationProgress($conn, 'IT Department', $adminId);
     <link href="../css/calendar.css" rel="stylesheet"/>
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        :root {
-            --primary-dark: #0f172a;
-            --primary-light: #1e293b;
-            --accent-blue: #3b82f6;
-            --accent-purple: #8b5cf6;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-        }
-
-        /* Main Layout */
-        main.bg-black {
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary-light));
-            min-height: 100vh;
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 2rem;
-            padding: 2rem;
-        }
-
-        /* Header Styles */
-        .container-fluid h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 2rem;
-            position: relative;
-            display: inline-block;
-        }
-
-        .container-fluid h1::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 40%;
-            height: 3px;
-            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
-            border-radius: 2px;
-        }
-
-        /* Department Cards Grid */
-        .row.justify-content-center {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            padding: 1rem;
-        }
-
-        /* Card Styling */
-        .card {
-            background: rgba(30, 41, 59, 0.5);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Card Header */
-        .card-body.bg-primary {
-            background: linear-gradient(135deg, #1e40af, #3b82f6) !important;
-            padding: 1.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .card-body.bg-primary a {
-            color: var(--text-primary);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Card Footer */
-        .card-footer {
-            background: var(--primary-light);
-            padding: 1rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            cursor: pointer;
-        }
-
-        .card-footer .small {
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        .card-footer .small i {
-            transition: transform 0.3s ease;
-        }
-
-        .card-footer.collapsed .small i {
-            transform: rotate(180deg);
-        }
-
-        /* Card Collapse */
-        .collapse {
-            background: var(--primary-dark);
-            padding: 1rem;
-        }
-
-        .collapse .card-body {
-            padding: 1rem;
-        }
-
-        .collapse .card-body h5 {
-            color: var(--text-primary);
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        .collapse .card-body .badge {
-            font-size: 0.875rem;
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-        }
-
-        .collapse .card-body .badge-primary {
-            background: var(--accent-blue);
-            color: var(--text-primary);
-        }
-
-        .collapse .card-body .badge-success {
-            background: var(--success);
-            color: var(--text-primary);
-        }
-
-        .collapse .card-body .badge-warning {
-            background: var(--warning);
-            color: var(--text-primary);
-        }
-
-        .collapse .card-body .progress {
-            height: 1rem;
-            border-radius: 9999px;
-            overflow: hidden;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .collapse .card-body .progress-bar {
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .collapse .card-body .progress-bar.bg-success {
-            background: var(--success);
-        }
-
-        .collapse .card-body .progress-bar.bg-warning {
-            background: var(--warning);
-        }
-
-        .collapse .card-body .progress-bar.bg-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-secondary);
-        }
-    </style>
 </head>
 <body class="sb-nav-fixed bg-black">
     <nav class="sb-topnav navbar navbar-expand navbar-dark border-bottom border-1 border-warning bg-dark">
         <a class="navbar-brand ps-3 text-muted" href="../admin/dashboard.php">Microfinance</a>
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars text-light"></i></button>
-        <div class="d-flex ms-auto me-0 me-md-3 my-2 my-md-0 align-items-center">
-            <div class="text-light me-3 p-2 rounded shadow-sm bg-gradient" id="currentTimeContainer" 
-                style="background: linear-gradient(45deg, #333333, #444444); border-radius: 5px;">
-                <span class="d-flex align-items-center">
-                    <span class="pe-2">
-                        <i class="fas fa-clock"></i> 
-                        <span id="currentTime">00:00:00</span>
+            <div class="d-flex ms-auto me-0 me-md-3 my-2 my-md-0 align-items-center">
+                <div class="text-light me-3 p-2 rounded shadow-sm bg-gradient" id="currentTimeContainer" 
+                    style="background: linear-gradient(45deg, #333333, #444444); border-radius: 5px;">
+                    <span class="d-flex align-items-center">
+                        <span class="pe-2">
+                            <i class="fas fa-clock"></i> 
+                            <span id="currentTime">00:00:00</span>
+                        </span>
+                        <button class="btn btn-outline-warning btn-sm ms-2" type="button" onclick="toggleCalendar()">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span id="currentDate">00/00/0000</span>
+                        </button>
                     </span>
-                    <button class="btn btn-outline-warning btn-sm ms-2" type="button" onclick="toggleCalendar()">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span id="currentDate">00/00/0000</span>
-                    </button>
-                </span>
-            </div>
-            <form class="d-none d-md-inline-block form-inline">
-                <div class="input-group">
-                    <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
-                    <button class="btn btn-warning" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
                 </div>
-            </form>
-        </div>
+                <form class="d-none d-md-inline-block form-inline">
+                    <div class="input-group">
+                        <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
+                        <button class="btn btn-warning" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+                    </div>
+                </form>
+            </div>
     </nav>
     <div id="layoutSidenav">
         <div id="layoutSidenav_nav">
@@ -274,18 +109,18 @@ $itData = getAdminEvaluationProgress($conn, 'IT Department', $adminId);
                                 <span class="big text-light mb-1">
                                     <?php
                                         if ($adminInfo) {
-                                            echo htmlspecialchars($adminInfo['firstname'] . ' ' . $adminInfo['middlename'] . ' ' . $adminInfo['lastname']);
+                                        echo htmlspecialchars($adminInfo['firstname'] . ' ' . $adminInfo['middlename'] . ' ' . $adminInfo['lastname']);
                                         } else {
-                                            echo "Admin information not available.";
+                                        echo "Admin information not available.";
                                         }
                                     ?>
                                 </span>      
                                 <span class="big text-light">
                                     <?php
                                         if ($adminInfo) {
-                                            echo htmlspecialchars($adminInfo['role']);
+                                        echo htmlspecialchars($adminInfo['role']);
                                         } else {
-                                            echo "User information not available.";
+                                        echo "User information not available.";
                                         }
                                     ?>
                                 </span>
@@ -383,13 +218,10 @@ $itData = getAdminEvaluationProgress($conn, 'IT Department', $adminId);
                                 <div class="card-body bg-primary text-center">
                                     <a href="../admin/finance.php" class="btn card-button text-dark font-weight-bold bg-light border border-dark w-100">Finance Department</a>
                                 </div>
-                                <div class="card-footer d-flex align-items-center justify-content-between bg-dark border border-light department-toggle" data-target="#financeInfo">
-                                    <div class="small text-warning">Click to View Details</div>
-                                    <div class="small text-warning">
-                                        <i class="fas fa-angle-down"></i>
-                                    </div>
+                                <div class="card-footer d-flex align-items-center justify-content-between bg-dark border-bottom border-light department-toggle">
+                                    <div class="small text-warning">Details</div>
                                 </div>
-                                <div id="financeInfo" class="collapse bg-dark text-dark">
+                                <div id="financeInfo" class=" bg-dark text-dark">
                                     <div class="card-body">
                                         <h5 class="text-center mb-4 text-light">Finance Department Evaluation Status</h5>
                                         <div class="text-center mb-3">
@@ -398,29 +230,29 @@ $itData = getAdminEvaluationProgress($conn, 'IT Department', $adminId);
                                             <span class="badge badge-warning mx-1">Pending: <?php echo $financeData['pending']; ?></span>
                                         </div>
                                         <div class="progress mb-2">
-                                            <?php if ($financeData['total'] > 0): ?>
-                                                <div class="progress-bar bg-success font-weight-bold" role="progressbar" 
-                                                    style="width: <?php echo ($financeData['evaluated'] / $financeData['total']) * 100; ?>%;" 
-                                                    aria-valuenow="<?php echo $financeData['evaluated']; ?>" 
-                                                    aria-valuemin="0" 
-                                                    aria-valuemax="<?php echo $financeData['total']; ?>">
-                                                    Evaluated (<?php echo $financeData['evaluated']; ?>)
-                                                </div>
-                                                <div class="progress-bar bg-warning text-dark font-weight-bold" role="progressbar" 
-                                                    style="width: <?php echo ($financeData['pending'] / $financeData['total']) * 100; ?>%;" 
-                                                    aria-valuenow="<?php echo $financeData['pending']; ?>" 
-                                                    aria-valuemin="0" 
-                                                    aria-valuemax="<?php echo $financeData['total']; ?>">
-                                                    Pending (<?php echo $financeData['pending']; ?>)
-                                                </div>
-                                            <?php else: ?>
-                                                <div class="progress-bar bg-secondary font-weight-bold w-100" role="progressbar" 
-                                                    aria-valuenow="0" 
-                                                    aria-valuemin="0" 
-                                                    aria-valuemax="100">
-                                                    No employees available
-                                                </div>
-                                            <?php endif; ?>
+                                        <?php if ($financeData['total'] > 0): ?>
+                                    <div class="progress-bar bg-success font-weight-bold" role="progressbar" 
+                                        style="width: <?php echo ($financeData['evaluated'] / $financeData['total']) * 100; ?>%;" 
+                                        aria-valuenow="<?php echo $financeData['evaluated']; ?>" 
+                                        aria-valuemin="0" 
+                                        aria-valuemax="<?php echo $financeData['total']; ?>">
+                                        Evaluated (<?php echo $financeData['evaluated']; ?>)
+                                    </div>
+                                    <div class="progress-bar bg-warning text-dark font-weight-bold" role="progressbar" 
+                                        style="width: <?php echo ($financeData['pending'] / $financeData['total']) * 100; ?>%;" 
+                                        aria-valuenow="<?php echo $financeData['pending']; ?>" 
+                                        aria-valuemin="0" 
+                                        aria-valuemax="<?php echo $financeData['total']; ?>">
+                                        Pending (<?php echo $financeData['pending']; ?>)
+                                    </div>
+                                <?php else: ?>
+                                    <div class="progress-bar bg-secondary font-weight-bold w-100" role="progressbar" 
+                                        aria-valuenow="0" 
+                                        aria-valuemin="0" 
+                                        aria-valuemax="100">
+                                        No employees available
+                                    </div>
+                                <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
@@ -431,13 +263,10 @@ $itData = getAdminEvaluationProgress($conn, 'IT Department', $adminId);
                                 <div class="card-body bg-primary text-center">
                                     <a href="../admin/hr.php" class="btn card-button text-dark font-weight-bold bg-light border border-dark w-100">Human Resource Department</a>
                                 </div>
-                                <div class="card-footer d-flex align-items-center justify-content-between bg-dark border border-light department-toggle" data-target="#hrInfo">
-                                    <div class="small text-warning">Click to View Details</div>
-                                    <div class="small text-warning">
-                                        <i class="fas fa-angle-down"></i>
-                                    </div>
+                                <div class="card-footer d-flex align-items-center justify-content-between bg-dark border-bottom border-light department-toggle">
+                                    <div class="small text-warning">Details</div>
                                 </div>
-                                <div id="hrInfo" class="collapse bg-dark text-dark">
+                                <div id="hrInfo" class="bg-dark text-dark">
                                     <div class="card-body">
                                         <h5 class="text-center mb-4 text-light">Human Resource Evaluation Status</h5>
                                         <div class="text-center mb-3">
@@ -446,29 +275,29 @@ $itData = getAdminEvaluationProgress($conn, 'IT Department', $adminId);
                                             <span class="badge badge-warning mx-1">Pending: <?php echo $hrData['pending']; ?></span>
                                         </div>
                                         <div class="progress mb-2">
-                                            <?php if ($hrData['total'] > 0): ?>
-                                                <div class="progress-bar bg-success font-weight-bold" role="progressbar" 
-                                                    style="width: <?php echo ($hrData['evaluated'] / $hrData['total']) * 100; ?>%;" 
-                                                    aria-valuenow="<?php echo $hrData['evaluated']; ?>" 
-                                                    aria-valuemin="0" 
-                                                    aria-valuemax="<?php echo $hrData['total']; ?>">
-                                                    Evaluated (<?php echo $hrData['evaluated']; ?>)
-                                                </div>
-                                                <div class="progress-bar bg-warning text-dark font-weight-bold" role="progressbar" 
-                                                    style="width: <?php echo ($hrData['pending'] / $hrData['total']) * 100; ?>%;" 
-                                                    aria-valuenow="<?php echo $hrData['pending']; ?>" 
-                                                    aria-valuemin="0" 
-                                                    aria-valuemax="<?php echo $hrData['total']; ?>">
-                                                    Pending (<?php echo $hrData['pending']; ?>)
-                                                </div>
-                                            <?php else: ?>
-                                                <div class="progress-bar bg-secondary font-weight-bold w-100" role="progressbar" 
-                                                    aria-valuenow="0" 
-                                                    aria-valuemin="0" 
-                                                    aria-valuemax="100">
-                                                    No employees available
-                                                </div>
-                                            <?php endif; ?>
+                                        <?php if ($hrData['total'] > 0): ?>
+                                    <div class="progress-bar bg-success font-weight-bold" role="progressbar" 
+                                        style="width: <?php echo ($hrData['evaluated'] / $hrData['total']) * 100; ?>%;" 
+                                        aria-valuenow="<?php echo $hrData['evaluated']; ?>" 
+                                        aria-valuemin="0" 
+                                        aria-valuemax="<?php echo $hrData['total']; ?>">
+                                        Evaluated (<?php echo $hrData['evaluated']; ?>)
+                                    </div>
+                                    <div class="progress-bar bg-warning text-dark font-weight-bold" role="progressbar" 
+                                        style="width: <?php echo ($hrData['pending'] / $hrData['total']) * 100; ?>%;" 
+                                        aria-valuenow="<?php echo $hrData['pending']; ?>" 
+                                        aria-valuemin="0" 
+                                        aria-valuemax="<?php echo $hrData['total']; ?>">
+                                        Pending (<?php echo $hrData['pending']; ?>)
+                                    </div>
+                                <?php else: ?>
+                                    <div class="progress-bar bg-secondary font-weight-bold w-100" role="progressbar" 
+                                        aria-valuenow="0" 
+                                        aria-valuemin="0" 
+                                        aria-valuemax="100">
+                                        No employees available
+                                    </div>
+                                <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
@@ -479,13 +308,10 @@ $itData = getAdminEvaluationProgress($conn, 'IT Department', $adminId);
                                 <div class="card-body bg-primary text-center">
                                     <a href="../admin/administration.php" class="btn card-button text-dark font-weight-bold bg-light border border-dark w-100">Administration Department</a>
                                 </div>
-                                <div class="card-footer d-flex align-items-center justify-content-between bg-dark border border-light department-toggle" data-target="#administrationInfo">
-                                    <div class="small text-warning">Click to View Details</div>
-                                    <div class="small text-warning">
-                                        <i class="fas fa-angle-down"></i>
-                                    </div>
+                                <div class="card-footer d-flex align-items-center justify-content-between bg-dark border-bottom border-light department-toggle">
+                                    <div class="small text-warning">Details</div>
                                 </div>
-                                <div id="administrationInfo" class="collapse bg-dark text-dark">
+                                <div id="administrationInfo" class="bg-dark text-dark">
                                     <div class="card-body">
                                         <h5 class="text-center mb-4 text-light">Administration Evaluation Status</h5>
                                         <div class="text-center mb-3">
@@ -494,29 +320,29 @@ $itData = getAdminEvaluationProgress($conn, 'IT Department', $adminId);
                                             <span class="badge badge-warning mx-1">Pending: <?php echo $administrationData['pending']; ?></span>
                                         </div>
                                         <div class="progress mb-2">
-                                            <?php if ($administrationData['total'] > 0): ?>
-                                                <div class="progress-bar bg-success font-weight-bold" role="progressbar" 
-                                                    style="width: <?php echo ($administrationData['evaluated'] / $administrationData['total']) * 100; ?>%;" 
-                                                    aria-valuenow="<?php echo $administrationData['evaluated']; ?>" 
-                                                    aria-valuemin="0" 
-                                                    aria-valuemax="<?php echo $administrationData['total']; ?>">
-                                                    Evaluated (<?php echo $administrationData['evaluated']; ?>)
-                                                </div>
-                                                <div class="progress-bar bg-warning text-dark font-weight-bold" role="progressbar" 
-                                                    style="width: <?php echo ($administrationData['pending'] / $administrationData['total']) * 100; ?>%;" 
-                                                    aria-valuenow="<?php echo $administrationData['pending']; ?>" 
-                                                    aria-valuemin="0" 
-                                                    aria-valuemax="<?php echo $administrationData['total']; ?>">
-                                                    Pending (<?php echo $administrationData['pending']; ?>)
-                                                </div>
-                                            <?php else: ?>
-                                                <div class="progress-bar bg-secondary font-weight-bold w-100" role="progressbar" 
-                                                    aria-valuenow="0" 
-                                                    aria-valuemin="0" 
-                                                    aria-valuemax="100">
-                                                    No employees available
-                                                </div>
-                                            <?php endif; ?>
+                                        <?php if ($administrationData['total'] > 0): ?>
+                                    <div class="progress-bar bg-success font-weight-bold" role="progressbar" 
+                                        style="width: <?php echo ($administrationData['evaluated'] / $administrationData['total']) * 100; ?>%;" 
+                                        aria-valuenow="<?php echo $administrationData['evaluated']; ?>" 
+                                        aria-valuemin="0" 
+                                        aria-valuemax="<?php echo $administrationData['total']; ?>">
+                                        Evaluated (<?php echo $administrationData['evaluated']; ?>)
+                                    </div>
+                                    <div class="progress-bar bg-warning text-dark font-weight-bold" role="progressbar" 
+                                        style="width: <?php echo ($administrationData['pending'] / $administrationData['total']) * 100; ?>%;" 
+                                        aria-valuenow="<?php echo $administrationData['pending']; ?>" 
+                                        aria-valuemin="0" 
+                                        aria-valuemax="<?php echo $administrationData['total']; ?>">
+                                        Pending (<?php echo $administrationData['pending']; ?>)
+                                    </div>
+                                <?php else: ?>
+                                    <div class="progress-bar bg-secondary font-weight-bold w-100" role="progressbar" 
+                                        aria-valuenow="0" 
+                                        aria-valuemin="0" 
+                                        aria-valuemax="100">
+                                        No employees available
+                                    </div>
+                                <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
@@ -527,13 +353,10 @@ $itData = getAdminEvaluationProgress($conn, 'IT Department', $adminId);
                                 <div class="card-body bg-primary text-center">
                                     <a href="../admin/sales.php" class="btn card-button text-dark font-weight-bold bg-light border border-dark w-100">Sales Department</a>
                                 </div>
-                                <div class="card-footer d-flex align-items-center justify-content-between bg-dark border border-light department-toggle" data-target="#salesInfo">
-                                    <div class="small text-warning">Click to View Details</div>
-                                    <div class="small text-warning">
-                                        <i class="fas fa-angle-down"></i>
-                                    </div>
+                                <div class="card-footer d-flex align-items-center justify-content-between bg-dark border-bottom border-light department-toggle">
+                                    <div class="small text-warning">Details</div>
                                 </div>
-                                <div id="salesInfo" class="collapse bg-dark text-dark">
+                                <div id="salesInfo" class="bg-dark text-dark">
                                     <div class="card-body">
                                         <h5 class="text-center mb-4 text-light">Sales Evaluation Status</h5>
                                         <div class="text-center mb-3">
@@ -542,29 +365,29 @@ $itData = getAdminEvaluationProgress($conn, 'IT Department', $adminId);
                                             <span class="badge badge-warning mx-1">Pending: <?php echo $salesData['pending']; ?></span>
                                         </div>
                                         <div class="progress mb-2">
-                                            <?php if ($salesData['total'] > 0): ?>
-                                                <div class="progress-bar bg-success font-weight-bold" role="progressbar" 
-                                                    style="width: <?php echo ($salesData['evaluated'] / $salesData['total']) * 100; ?>%;" 
-                                                    aria-valuenow="<?php echo $salesData['evaluated']; ?>" 
-                                                    aria-valuemin="0" 
-                                                    aria-valuemax="<?php echo $salesData['total']; ?>">
-                                                    Evaluated (<?php echo $salesData['evaluated']; ?>)
-                                                </div>
-                                                <div class="progress-bar bg-warning text-dark font-weight-bold" role="progressbar" 
-                                                    style="width: <?php echo ($salesData['pending'] / $salesData['total']) * 100; ?>%;" 
-                                                    aria-valuenow="<?php echo $salesData['pending']; ?>" 
-                                                    aria-valuemin="0" 
-                                                    aria-valuemax="<?php echo $salesData['total']; ?>">
-                                                    Pending (<?php echo $salesData['pending']; ?>)
-                                                </div>
-                                            <?php else: ?>
-                                                <div class="progress-bar bg-secondary font-weight-bold w-100" role="progressbar" 
-                                                    aria-valuenow="0" 
-                                                    aria-valuemin="0" 
-                                                    aria-valuemax="100">
-                                                    No employees available
-                                                </div>
-                                            <?php endif; ?>
+                                        <?php if ($salesData['total'] > 0): ?>
+                                    <div class="progress-bar bg-success font-weight-bold" role="progressbar" 
+                                        style="width: <?php echo ($salesData['evaluated'] / $salesData['total']) * 100; ?>%;" 
+                                        aria-valuenow="<?php echo $salesData['evaluated']; ?>" 
+                                        aria-valuemin="0" 
+                                        aria-valuemax="<?php echo $salesData['total']; ?>">
+                                        Evaluated (<?php echo $salesData['evaluated']; ?>)
+                                    </div>
+                                    <div class="progress-bar bg-warning text-dark font-weight-bold" role="progressbar" 
+                                        style="width: <?php echo ($salesData['pending'] / $salesData['total']) * 100; ?>%;" 
+                                        aria-valuenow="<?php echo $salesData['pending']; ?>" 
+                                        aria-valuemin="0" 
+                                        aria-valuemax="<?php echo $salesData['total']; ?>">
+                                        Pending (<?php echo $salesData['pending']; ?>)
+                                    </div>
+                                <?php else: ?>
+                                    <div class="progress-bar bg-secondary font-weight-bold w-100" role="progressbar" 
+                                        aria-valuenow="0" 
+                                        aria-valuemin="0" 
+                                        aria-valuemax="100">
+                                        No employees available
+                                    </div>
+                                <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
@@ -575,13 +398,10 @@ $itData = getAdminEvaluationProgress($conn, 'IT Department', $adminId);
                                 <div class="card-body bg-primary text-center">
                                     <a href="../admin/credit.php" class="btn card-button text-dark font-weight-bold bg-light border border-dark w-100">Credit Department</a>
                                 </div>
-                                <div class="card-footer d-flex align-items-center justify-content-between bg-dark border border-light department-toggle" data-target="#creditInfo">
-                                    <div class="small text-warning">Click to View Details</div>
-                                    <div class="small text-warning">
-                                        <i class="fas fa-angle-down"></i>
-                                    </div>
+                                <div class="card-footer d-flex align-items-center justify-content-between bg-dark border-bottom border-light department-toggle">
+                                    <div class="small text-warning">Details</div>
                                 </div>
-                                <div id="creditInfo" class="collapse bg-dark text-dark">
+                                <div id="creditInfo" class="bg-dark text-dark">
                                     <div class="card-body">
                                         <h5 class="text-center mb-4 text-light">Credit Evaluation Status</h5>
                                         <div class="text-center mb-3">
@@ -590,29 +410,29 @@ $itData = getAdminEvaluationProgress($conn, 'IT Department', $adminId);
                                             <span class="badge badge-warning mx-1">Pending: <?php echo $creditData['pending']; ?></span>
                                         </div>
                                         <div class="progress mb-2">
-                                            <?php if ($creditData['total'] > 0): ?>
-                                                <div class="progress-bar bg-success font-weight-bold" role="progressbar" 
-                                                    style="width: <?php echo ($creditData['evaluated'] / $creditData['total']) * 100; ?>%;" 
-                                                    aria-valuenow="<?php echo $creditData['evaluated']; ?>" 
-                                                    aria-valuemin="0" 
-                                                    aria-valuemax="<?php echo $creditData['total']; ?>">
-                                                    Evaluated (<?php echo $creditData['evaluated']; ?>)
-                                                </div>
-                                                <div class="progress-bar bg-warning text-dark font-weight-bold" role="progressbar" 
-                                                    style="width: <?php echo ($creditData['pending'] / $creditData['total']) * 100; ?>%;" 
-                                                    aria-valuenow="<?php echo $creditData['pending']; ?>" 
-                                                    aria-valuemin="0" 
-                                                    aria-valuemax="<?php echo $creditData['total']; ?>">
-                                                    Pending (<?php echo $creditData['pending']; ?>)
-                                                </div>
-                                            <?php else: ?>
-                                                <div class="progress-bar bg-secondary font-weight-bold w-100" role="progressbar" 
-                                                    aria-valuenow="0" 
-                                                    aria-valuemin="0" 
-                                                    aria-valuemax="100">
-                                                    No employees available
-                                                </div>
-                                            <?php endif; ?>
+                                        <?php if ($creditData['total'] > 0): ?>
+                                    <div class="progress-bar bg-success font-weight-bold" role="progressbar" 
+                                        style="width: <?php echo ($creditData['evaluated'] / $creditData['total']) * 100; ?>%;" 
+                                        aria-valuenow="<?php echo $creditData['evaluated']; ?>" 
+                                        aria-valuemin="0" 
+                                        aria-valuemax="<?php echo $creditData['total']; ?>">
+                                        Evaluated (<?php echo $creditData['evaluated']; ?>)
+                                    </div>
+                                    <div class="progress-bar bg-warning text-dark font-weight-bold" role="progressbar" 
+                                        style="width: <?php echo ($creditData['pending'] / $creditData['total']) * 100; ?>%;" 
+                                        aria-valuenow="<?php echo $creditData['pending']; ?>" 
+                                        aria-valuemin="0" 
+                                        aria-valuemax="<?php echo $creditData['total']; ?>">
+                                        Pending (<?php echo $creditData['pending']; ?>)
+                                    </div>
+                                <?php else: ?>
+                                    <div class="progress-bar bg-secondary font-weight-bold w-100" role="progressbar" 
+                                        aria-valuenow="0" 
+                                        aria-valuemin="0" 
+                                        aria-valuemax="100">
+                                        No employees available
+                                    </div>
+                                <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
@@ -623,13 +443,10 @@ $itData = getAdminEvaluationProgress($conn, 'IT Department', $adminId);
                                 <div class="card-body bg-primary text-center">
                                     <a href="../admin/it.php" class="btn card-button text-dark font-weight-bold bg-light border border-dark w-100">IT Department</a>
                                 </div>
-                                <div class="card-footer d-flex align-items-center justify-content-between bg-dark border border-light department-toggle" data-target="#itInfo">
-                                    <div class="small text-warning">Click to View Details</div>
-                                    <div class="small text-warning">
-                                        <i class="fas fa-angle-down"></i>
-                                    </div>
+                                <div class="card-footer d-flex align-items-center justify-content-between bg-dark border-bottom border-light department-toggle">
+                                    <div class="small text-warning">Details</div>
                                 </div>
-                                <div id="itInfo" class="collapse bg-dark text-dark">
+                                <div id="itInfo" class="bg-dark text-dark">
                                     <div class="card-body">
                                         <h5 class="text-center mb-4 text-light">It Evaluation Status</h5>
                                         <div class="text-center mb-3">

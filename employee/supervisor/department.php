@@ -9,16 +9,26 @@ include '../../db/db_conn.php';
 
 // Fetch user info
 $employeeId = $_SESSION['e_id'];
-$sql = "SELECT firstname, middlename, lastname, email, role, position, pfp FROM employee_register WHERE e_id = ?";
+$sql = "SELECT firstname, middlename, lastname, email, role, position, department, pfp FROM employee_register WHERE e_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $employeeId);
 $stmt->execute();
 $result = $stmt->get_result();
 $employeeInfo = $result->fetch_assoc();
 $stmt->close();
+
+// Fetch employees in the same department
+$department = $employeeInfo['department'];
+$sql = "SELECT e_id, firstname, middlename, lastname, email, role, phone_number, address FROM employee_register WHERE department = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $department);
+$stmt->execute();
+$employeesResult = $stmt->get_result();
+$employees = $employeesResult->fetch_all(MYSQLI_ASSOC); // Fetch all employees
+$stmt->close();
 $conn->close();
 
-$profilePicture = !empty($employeeInfo['profile_picture']) ? $employeeInfo['profile_picture'] : '../../img/defaultpfp.png';
+$profilePicture = !empty($employeeInfo['pfp']) ? $employeeInfo['pfp'] : '../../img/defaultpfp.png';
 
 ?>
 
@@ -204,7 +214,7 @@ $profilePicture = !empty($employeeInfo['profile_picture']) ? $employeeInfo['prof
                         </a>
                         <div class="collapse" id="collapseSR" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link text-light" href="">View Your Rating</a>
+                                <a class="nav-link text-light" href="../../employee/supervisor/awardee.php">View Your Rating</a>
                             </nav>
                         </div> 
                         <div class="sb-sidenav-menu-heading text-center text-muted border-top border-1 border-warning mt-3">Feedback</div> 
@@ -228,7 +238,7 @@ $profilePicture = !empty($employeeInfo['profile_picture']) ? $employeeInfo['prof
         <div id="layoutSidenav_content">
             <main class="bg-black">
                 <div class="container-fluid position-relative px-4 fixed-table">
-                    <h1 class="mb-4 text-light text-center">Evaluation Department </h1> <!-- Center the title -->
+                    <h1 class="mb-4 text-light text-center">Department Evaluation</h1> <!-- Center the title -->
 
                     <div class="container" id="calendarContainer" 
                         style="position: fixed; top: 9%; right: 0; z-index: 1050; 
@@ -243,7 +253,7 @@ $profilePicture = !empty($employeeInfo['profile_picture']) ? $employeeInfo['prof
                     <div class="card mb-4 bg-dark text-light">
                         <div class="card-header border-bottom border-1 border-warning">
                             <i class="fas fa-table me-1"></i>
-                            (deparment employees)
+                            Department Employees
                         </div>
                         <div class="card-body">
                             <table id="datatablesSimple" class="table text-light text-center">
@@ -259,54 +269,30 @@ $profilePicture = !empty($employeeInfo['profile_picture']) ? $employeeInfo['prof
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="text-center text-light">
-                                        <td>1</td>
-                                        <td>John Doe</td>
-                                        <td>john.doe@example.com</td>
-                                        <td></td>
-                                        <td>123-456-7890</td>
-                                        <td>123 Main St, City, Country</td>
-                                        <td class='d-flex justify-content-around'>
-                                            <button class="btn btn-success btn-sm me-2" onclick="fillUpdateForm(1, 'John', 'Doe', 'john.doe@example.com', 'Manager', '123-456-7890', '123 Main St, City, Country')">Evaluate</button>
-                                            
-                                        </td>
-                                    </tr>
-                                    <tr class="text-center text-light">
-                                        <td>2</td>
-                                        <td>Jane Smith</td>
-                                        <td>jane.smith@example.com</td>
-                                        <td></td>
-                                        <td>987-654-3210</td>
-                                        <td>456 Elm St, City, Country</td>
-                                        <td class='d-flex justify-content-around'>
-                                            <button class="btn btn-success btn-sm me-2" onclick="fillUpdateForm(2, 'Jane', 'Smith', 'jane.smith@example.com', 'Developer', '987-654-3210', '456 Elm St, City, Country')">Evaluate</button>
-                                           
-                                        </td>
-                                    </tr>
-                                    <?php if ($result->num_rows > 0): ?>
-                                        <?php while ($row = $result->fetch_assoc()): ?>
+                                    <?php if (!empty($employees)): ?>
+                                        <?php foreach ($employees as $employee): ?>
                                             <tr class="text-center text-light">
-                                                <td><?php echo htmlspecialchars($row['a_id']); ?></td>
-                                                <td><?php echo htmlspecialchars($row['firstname']. ' ' . $row['lastname']); ?></td>
-                                                <td><?php echo htmlspecialchars($row['email']); ?></td>
-                                                <td><?php echo htmlspecialchars($row['role']); ?></td>
-                                                <td><?php echo htmlspecialchars($row['phone_number']); ?></td>
-                                                <td><?php echo htmlspecialchars($row['address']); ?></td>
+                                                <td><?php echo htmlspecialchars($employee['e_id']); ?></td>
+                                                <td><?php echo htmlspecialchars($employee['firstname'] . ' ' . $employee['middlename'] . ' ' . $employee['lastname']); ?></td>
+                                                <td><?php echo htmlspecialchars($employee['email']); ?></td>
+                                                <td><?php echo htmlspecialchars($employee['role']); ?></td>
+                                                <td><?php echo htmlspecialchars($employee['phone_number']); ?></td>
+                                                <td><?php echo htmlspecialchars($employee['address']); ?></td>
                                                 <td class='d-flex justify-content-around'>
                                                     <button class="btn btn-success btn-sm me-2" 
-                                                            onclick="fillUpdateForm(<?php echo $row['a_id']; ?>, '<?php echo htmlspecialchars($row['firstname']); ?>', '<?php echo htmlspecialchars($row['lastname']); ?>', '<?php echo htmlspecialchars($row['email']); ?>', '<?php echo htmlspecialchars($row['role']); ?>', '<?php echo htmlspecialchars($row['phone_number']); ?>', '<?php echo htmlspecialchars($row['address']); ?>')">Update</button>
-                                                    <button class="btn btn-danger btn-sm" onclick="deleteEmployee(<?php echo $row['a_id']; ?>)">Delete</button>
+                                                        onclick="openModal(<?php echo $employee['e_id']; ?>, '<?php echo htmlspecialchars($employee['firstname']); ?>', '<?php echo htmlspecialchars($employee['lastname']); ?>', '<?php echo htmlspecialchars($employee['email']); ?>', '<?php echo htmlspecialchars($employee['role']); ?>', '<?php echo htmlspecialchars($employee['phone_number']); ?>', '<?php echo htmlspecialchars($employee['address']); ?>')">
+                                                        Evaluate
+                                                    </button>
                                                 </td>
                                             </tr>
-                                        <?php endwhile; ?>
+                                        <?php endforeach; ?>
                                     <?php else: ?>
-                                        <tr><td colspan="8" class="text-center">No records found.</td></tr>
+                                        <tr><td colspan="7" class="text-center">No records found.</td></tr>
                                     <?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                    
                 </div>
             </main>
             
@@ -341,6 +327,28 @@ $profilePicture = !empty($employeeInfo['profile_picture']) ? $employeeInfo['prof
                     </div>
                 </div>
             </footer>
+        </div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div class="modal fade" id="employeeModal" tabindex="-1" aria-labelledby="employeeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="employeeModalLabel">Employee Evaluation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="employeeEvaluationForm">
+                        <!-- Evaluation Questions -->
+                        <div id="evaluationQuestions"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="submitEvaluation()">Save Evaluation</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -498,6 +506,108 @@ $profilePicture = !empty($employeeInfo['profile_picture']) ? $employeeInfo['prof
         document.getElementById('searchResults').innerHTML = '';  // Clear the search results
     });
 
+    function evaluateEmployee(e_id, firstname, lastname, email, role, phone_number, address) {
+        alert(`Evaluating Employee: ${firstname} ${lastname}`);
+        // You can replace this with the code for opening an evaluation form or redirecting to an evaluation page, etc.
+    }
+
+    function openModal(e_id, firstName, lastName, email, role, phoneNumber, address) {
+        // Generate evaluation questions
+        const evaluationQuestions = {
+            "Quality of Work": [
+                "How do you rate the employee's attention to detail?",
+                "How would you evaluate the accuracy of the employee's work?",
+                "Does the employee consistently meet job requirements?"
+            ],
+            "Communication Skills": [
+                "Does the employee communicate clearly?",
+                "Is the employee responsive to feedback?",
+                "How effectively does the employee listen to others?"
+            ],
+            "Teamwork": [
+                "Does the employee collaborate well with others?",
+                "How well does the employee contribute to team success?",
+                "Does the employee support team members when needed?"
+            ],
+            "Punctuality": [
+                "Is the employee consistent in meeting deadlines?",
+                "How often does the employee arrive on time?",
+                "Does the employee respect others' time?"
+            ],
+            "Initiative": [
+                "Does the employee take initiative without being asked?",
+                "How frequently does the employee suggest improvements?",
+                "Does the employee show a proactive attitude?"
+            ]
+        };
+
+        const questionsDiv = document.getElementById('evaluationQuestions');
+        questionsDiv.innerHTML = ''; // Clear previous questions
+
+        // Generate HTML for questions
+        for (const [category, questions] of Object.entries(evaluationQuestions)) {
+            questionsDiv.innerHTML += `<h5>${category}</h5>`;
+            questions.forEach((question, index) => {
+                questionsDiv.innerHTML += `
+                    <div class="mb-3">
+                        <label>${question}</label>
+                        <div class="star-rating">
+                            ${[6, 5, 4, 3, 2, 1].map(value => `
+                                <input type="radio" name="${category.replace(/\s/g, '')}q${index}" value="${value}" id="${category.replace(/\s/g, '')}q${index}star${value}">
+                                <label for="${category.replace(/\s/g, '')}q${index}star${value}">&#9733;</label>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Open the modal
+        var myModal = new bootstrap.Modal(document.getElementById('employeeModal'));
+        myModal.show();
+    }
+
+    function submitEvaluation() {
+        const evaluations = [];
+        const questionsDiv = document.getElementById('evaluationQuestions');
+
+        questionsDiv.querySelectorAll('input[type="radio"]:checked').forEach(input => {
+            evaluations.push({
+                question: input.name,
+                rating: input.value
+            });
+        });
+
+        const totalQuestions = questionsDiv.querySelectorAll('.star-rating').length;
+
+        if (evaluations.length !== totalQuestions) {
+            alert('Please complete the evaluation before submitting.');
+            return;
+        }
+
+        // Save evaluations to the database
+        fetch('../../employee/save_evaluation.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ evaluations })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Evaluation submitted successfully!');
+                var myModal = bootstrap.Modal.getInstance(document.getElementById('employeeModal'));
+                myModal.hide();
+            } else {
+                alert('Failed to submit evaluation.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while submitting the evaluation.');
+        });
+    }
 </script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'> </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

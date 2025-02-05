@@ -105,17 +105,35 @@ function getTopEmployeesByCriterion($conn, $criterion, $criterionLabel, $index) 
 
             // Add buttons for comments and reactions
             echo "<div class='comment-reaction-buttons'>";
-            echo "  <button class='btn btn-primary' onclick='openCommentModal()'>Write a Comment</button>";
-            echo "  <div class='comment-input-container'>";
-            echo "      <button class='btn btn-primary react-btn' onclick='showReactions(this)'>React</button>";
-            echo "      <div id='reaction-menu' class='reaction-dropdown'>";
-            echo "          <button onclick='selectReaction(\"👍 Like\")'>👍</button>";
-            echo "          <button onclick='selectReaction(\"😂 Haha\")'>😂</button>";
-            echo "          <button onclick='selectReaction(\"❤️ Heart\")'>❤️</button>";
-            echo "          <button onclick='selectReaction(\"😡 Angry\")'>😡</button>";
-            echo "          <button onclick='selectReaction(\"😢 Sad\")'>😢</button>";
+            echo "  <div class='reactions text-start mt-4'>";
+            echo "      <div class='reaction-button'>";
+            echo "          <button class='btn btn-outline-primary' title='Like' onmouseover=\"showPopup('👍', 'like-popup')\" onmouseout=\"hidePopup('like-popup')\" onclick=\"react('like')\">";
+            echo "              👍 <span id='like-count'>2</span>";
+            echo "          </button>";
+            echo "          <span class='popup-emoji' id='like-popup'>👍</span>";
+            echo "      </div>";
+            echo "      <div class='reaction-button'>";
+            echo "          <button class='btn btn-outline-primary' title='Love' onmouseover=\"showPopup('❤️', 'love-popup')\" onmouseout=\"hidePopup('love-popup')\" onclick=\"react('love')\">";
+            echo "              ❤️ <span id='love-count'>3</span>";
+            echo "          </button>";
+            echo "          <span class='popup-emoji' id='love-popup'>❤️</span>";
+            echo "      </div>";
+            echo "      <div class='reaction-button'>";
+            echo "          <button class='btn btn-outline-primary' title='Wow' onmouseover=\"showPopup('😮', 'wow-popup')\" onmouseout=\"hidePopup('wow-popup')\" onclick=\"react('wow')\">";
+            echo "              😮 <span id='wow-count'>1</span>";
+            echo "          </button>";
+            echo "          <span class='popup-emoji' id='wow-popup'>😮</span>";
+            echo "      </div>";
+            echo "      <div class='reaction-button'>";
+            echo "          <button class='btn btn-outline-primary' title='Awesome' onmouseover=\"showPopup('😎', 'awesome-popup')\" onmouseout=\"hidePopup('awesome-popup')\" onclick=\"react('awesome')\">";
+            echo "              😎 <span id='awesome-count'>2</span>";
+            echo "          </button>";
+            echo "          <span class='popup-emoji' id='awesome-popup'>😎</span>";
             echo "      </div>";
             echo "  </div>";
+            echo "</div>";
+            echo "<div class='text-center mt-2'>";
+            echo "  <button class='btn btn-primary' onclick='openCommentModal()'>Write a Comment</button>";
             echo "</div>";
 
             echo "</div>"; // End profile-section
@@ -153,472 +171,12 @@ function getTopEmployeesByCriterion($conn, $criterion, $criterionLabel, $index) 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Outstanding Employees</title>
     <link href="../../css/styles.css" rel="stylesheet" />
+    <link href="../../css/awardee.css" rel="stylesheet"/>
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
     <link href="../../css/calendar.css" rel="stylesheet"/>
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        .card {
-            border: 2px solid #ddd; 
-            border-radius: 10px; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-            padding: 10px; 
-            background-color: #f9f9f9;
-        }
-        .card-img {
-            border-radius: 10px;
-        }
-        .card-body {
-            padding-left: 10px;
-        }
-        .card-title {
-            font-size: 20px; 
-            font-weight: bold; 
-            color: #333;
-        }
-        .card-text {
-            font-size: 14px;
-        }
-        .category {
-            display: none;
-        }
-        .btn {
-            transition: transform 0.3s, background-color 0.3s; /* Smooth transition */
-            border-radius: 20px;
-            padding: 5px 10px;
-            font-size: 14px;
-        }
 
-        .btn:hover {
-            transform: translateY(-2px); /* Raise the button up */
-        }
-        
-        .emoji-container {
-            display: none;
-            gap: 15px;
-            cursor: pointer;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-        .emoji {
-            font-size: 30px;
-            transition: transform 0.2s ease;
-            padding: 10px;
-        }
-        .emoji:hover {
-            transform: scale(1.2);
-        }
-        .reaction {
-            margin-top: 15px;
-            font-size: 18px;
-            color: #333;
-        }
-        .saved-reaction {
-            margin-top: 10px;
-            color: #007bff;
-        }
-        .open-btn {
-            font-size: 16px;
-            padding: 8px 16px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        .open-btn:hover {
-            background-color: #0056b3;
-        }
-        .reaction-count {
-            font-size: 18px;
-            color: #333;
-            margin-top: 10px;
-            display: flex;
-            gap: 15px;
-        }
-        .reaction-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .selected-emoji {
-            font-size: 50px;
-            margin-top: 20px;
-        }
-        .employee-card {
-            background: linear-gradient(135deg, #172554 0%, #1e3a8a 100%);
-            border-radius: 20px;
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 2rem auto;
-            color: white;
-        }
-
-        .dashboard-title {
-            text-align: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 2rem;
-            color: white;
-        }
-
-        .metrics-container {
-            display: grid;
-            grid-template-columns: 1fr 1.5fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .metrics-column {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .metric-box {
-            background: rgba(64, 61, 223, 0.27);
-            border-radius: 15px;
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            margin-top: 2rem; /* Add margin to the top */
-            margin-bottom: 2rem; /* Add margin to the bottom */
-            width: 100%; /* Ensure all metric boxes have the same width */
-        }
-
-        .metric-label {
-            color: #22d3ee;
-            font-size: 0.875rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .metric-value {
-            font-size: 1.875rem;
-            font-weight: bold;
-        }
-
-        .profile-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .progress-circle-container {
-            position: relative;
-            width: 200px;
-            height: 200px;
-        }
-
-        .progress-circle {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            position: relative;
-            background: #1e3a8a;
-        }
-
-        .profile-image-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 4px solid #22d3ee;
-            overflow: hidden;
-        }
-
-        .profile-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .profile-info {
-            text-align: center;
-            margin-top: 1rem;
-        }
-
-        .employee-name {
-            font-size: 1.25rem;
-            font-weight: bold;
-            margin-bottom: 0.25rem;
-        }
-
-        .department-name {
-            color: #22d3ee;
-            font-size: 0.875rem;
-        }
-
-        .employee-id {
-            text-align: center;
-            color: rgba(255, 255, 255, 0.6);
-            margin-top: 1rem;
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease-out forwards;
-            opacity: 0;
-        }
-
-        /* Progress Circle Animation */
-        @keyframes progressCircle {
-            from {
-                stroke-dashoffset: 628;
-            }
-            to {
-                stroke-dashoffset: var(--progress);
-            }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .metrics-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .employee-card {
-                margin: 1rem;
-                padding: 1rem;
-            }
-        }
-
-        /* Additional styles for progress circle */
-        .progress-ring {
-            position: absolute;
-            top: 0;
-            left: 0;
-            transform: rotate(-90deg);
-        }
-
-        .progress-ring__circle {
-            transition: stroke-dashoffset 0.5s ease-out;
-        }
-
-        .comment-reaction-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .modal-right {
-            position: fixed;
-            top: 10%;
-            right: 0;
-            width: 300px;
-            height: 80%;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            display: none;
-            z-index: 1000;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
-        }
-
-        .modal-body {
-            margin-top: 20px;
-            overflow-y: auto;
-            max-height: 70%;
-        }
-
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            border-top: 1px solid #ddd;
-            padding-top: 10px;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-        .comment-button {
-            background-color: #1877F2;
-            color: white;
-            padding: 5px 10px;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-
-        .comment-display {
-            background: #f1f1f1;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-
-        .reaction-container {
-            position: relative;
-            display: inline-block;
-        }
-
-        .like-button {
-            background-color: #1877F2;
-            color: white;
-            padding: 5px 10px;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        .reaction-menu {
-            display: none;
-            position: absolute;
-            top: -40px;
-            left: 0;
-            background: white;
-            border-radius: 10px;
-            padding: 5px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 10;
-            flex-direction: row;
-            gap: 5px;
-        }
-
-        .reaction {
-            cursor: pointer;
-            font-size: 20px;
-            transition: transform 0.2s;
-        }
-
-        .reaction:hover {
-            transform: scale(1.3);
-        }
-
-        .comment-section {
-            margin-top: 10px;
-        }
-
-        .comment-input {
-            width: 100%;
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            color: black; /* Change text color to black */
-        }
-
-        .comment-list {
-            margin-top: 5px;
-            max-height: 100px;
-            overflow-y: auto;
-        }
-
-        .comment {
-            background: transparent;
-            padding: 5px;
-            margin-top: 3px;
-            border-radius: 5px;
-            color: white;
-        }
-        .reaction-dropdown {
-            display: none;
-            position: absolute;
-            background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 5px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 1;
-        }
-        .reaction-dropdown.show {
-            display: block;
-        }
-        .reaction-dropdown button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 20px;
-            margin: 5px;
-        }
-        .comment-input-container {
-            display: flex;
-            align-items: center;
-            margin-top: 10px;
-        }
-        .comment-input {
-            width: 100%;
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            color: black;
-        }
-        .comment-list {
-            margin-top: 5px;
-            max-height: 100px;
-            overflow-y: auto;
-        }
-        .comment {
-            background: transparent;
-            padding: 5px;
-            margin-top: 3px;
-            border-radius: 5px;
-            color: white;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-        .modal-content {
-            background-color: rgba(51, 51, 51, 0.9);
-            color: white;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 500px;
-            border-radius: 10px;
-        }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .close:hover,
-        .close:focus {
-            color: white;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .modal-label {
-            display: block;
-            margin-bottom: 10px;
-            font-size: 18px;
-        }
-    </style>
 </head>
 <body class="sb-nav-fixed bg-black">
     <nav class="sb-topnav navbar navbar-expand navbar-dark border-bottom border-1 border-warning bg-dark">
@@ -723,7 +281,10 @@ function getTopEmployeesByCriterion($conn, $criterion, $criterionLabel, $index) 
                         </a>
                         <div class="collapse" id="collapsePM" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link text-light" href="../../employee/staff/evaluation.php">Evaluation</a>
+                                <a class="nav-link text-light" href="../../employee/staff/evaluation.php">View Ratings</a>
+                            </nav>
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link text-light" href="../../employee/staff/department.php">Department Evaluation</a>
                             </nav>
                         </div>
                         <a class="nav-link collapsed text-light" href="#" data-bs-toggle="collapse" data-bs-target="#collapseSR" aria-expanded="false" aria-controls="collapseSR">
@@ -993,6 +554,14 @@ function getTopEmployeesByCriterion($conn, $criterion, $criterionLabel, $index) 
 
         function openCommentModal() {
             document.getElementById('commentModal').style.display = 'block';
+        }
+
+        function showPopup(emoji, popupId) {
+            document.getElementById(popupId).style.opacity = '1';
+        }
+
+        function hidePopup(popupId) {
+            document.getElementById(popupId).style.opacity = '0';
         }
     </script>
 

@@ -167,7 +167,7 @@ $conn->close();
                         </a>
                         <div class="collapse" id="collapseSR" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link text-light" href="">Awardee</a>
+                                <a class="nav-link text-light" href="../../employee/staff/awardee.php">Awardee</a>
                             </nav>
                              </div>
                         <div class="sb-sidenav-menu-heading text-center text-muted border-top border-1 border-warning mt-3">Feedback</div> 
@@ -216,7 +216,7 @@ $conn->close();
                                             <div class="p-3">
                                                 <h5>Used Leave</h5>
                                                 <p class="fs-4 text-danger"><?php echo htmlspecialchars($usedLeave); ?> days</p>
-                                                <a class="btn btn-danger" href="../supervisor/leave_history.php"> View leave history</a>
+                                                <a class="btn btn-danger" href="../staff/leave_history.php"> View leave history</a>
                                             </div>
                                         </div>
                                     </div>
